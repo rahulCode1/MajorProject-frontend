@@ -21,10 +21,10 @@ const EcommerceProvider = ({ children }) => {
   };
 
   const fetchAllProducts = async (category) => {
-    let url = `http://localhost/api/products`;
+    let url = `https://major-project-backend-nine.vercel.app/api/products`;
 
     if (category) {
-      url = `http://localhost/api/products?category=${category}`;
+      url = `https://major-project-backend-nine.vercel.app/api/products?category=${category}`;
     }
 
     try {
@@ -37,7 +37,7 @@ const EcommerceProvider = ({ children }) => {
       const data = await res.json();
       const products = data.data?.products;
 
-      console.log(data)
+      console.log(data);
 
       const transFormDat = products.map((product) => ({
         ...product,
@@ -50,11 +50,11 @@ const EcommerceProvider = ({ children }) => {
     }
   };
 
- 
-
   const fetchUserAddress = async () => {
     try {
-      const res = await fetch(`http://localhost:80/api/address`);
+      const res = await fetch(
+        `https://major-project-backend-nine.vercel.app/api/address`
+      );
 
       if (!res.ok) {
         throw new Error("Error occurred while fetching address.");
@@ -76,7 +76,9 @@ const EcommerceProvider = ({ children }) => {
   useEffect(() => {
     const fetchAllOrders = async () => {
       try {
-        const res = await fetch(`http://localhost:80/api/order`);
+        const res = await fetch(
+          `https://major-project-backend-nine.vercel.app/api/order`
+        );
 
         if (!res.ok) {
           throw new Error("Error occurred while fetching order.");
@@ -233,7 +235,7 @@ const EcommerceProvider = ({ children }) => {
     const toastId = toast.loading("Adding default address...");
     try {
       const response = await fetch(
-        `http://localhost/api/address/update/${address.id}/default`,
+        `https://major-project-backend-nine.vercel.app/api/address/update/${address.id}/default`,
         {
           method: "POST",
           headers: {
@@ -269,9 +271,6 @@ const EcommerceProvider = ({ children }) => {
     setUserOrders((prevStat) => [...prevStat, order]);
   };
 
-
-  
-
   useEffect(() => {
     fetchUserAddress();
   }, []);
@@ -288,7 +287,7 @@ const EcommerceProvider = ({ children }) => {
         wishlist,
         address,
         userOrders,
-        fetchAllProducts, 
+        fetchAllProducts,
         handleIncreaseQuantity,
         handleDecreaseQuantity,
         handleRemoveFromCart,

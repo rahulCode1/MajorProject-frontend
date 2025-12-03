@@ -96,13 +96,16 @@ const AddProducts = () => {
 
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:80/api/product/add`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(product),
-      });
+      const res = await fetch(
+        `https://major-project-backend-nine.vercel.app/product/add`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(product),
+        }
+      );
 
       if (!res.ok) {
         throw new Error("Failed to add new product.");
@@ -115,7 +118,7 @@ const AddProducts = () => {
     }
 
     setLoading(false);
-    // setFormData(initialFormData);
+    setFormData(initialFormData);
     navigate("/products");
   };
 

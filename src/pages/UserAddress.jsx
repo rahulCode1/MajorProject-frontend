@@ -13,7 +13,7 @@ const UserAddress = () => {
     const toastId = toast.loading("Address remove...");
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost/api/address/${id}`, {
+      const response = await fetch(`https://major-project-backend-nine.vercel.app/api/address/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

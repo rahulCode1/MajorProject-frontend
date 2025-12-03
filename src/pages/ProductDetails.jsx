@@ -229,7 +229,7 @@ export default ProductDetails;
 export const loader = async ({ request, params }) => {
   const productId = params.id;
 
-  const response = await fetch(`http://localhost/api/product/${productId}`);
+  const response = await fetch(`https://major-project-backend-nine.vercel.app/api/product/${productId}`);
 
   if (!response.ok) {
     throw new Response(

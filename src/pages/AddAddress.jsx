@@ -31,7 +31,7 @@ const AddAddress = () => {
 
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:80/api/address/new`, {
+      const res = await fetch(`https://major-project-backend-nine.vercel.app/api/address/new`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -49,6 +49,7 @@ const AddAddress = () => {
       toast.error("Something went wrong while add new address", { id: tostId });
     }
 
+    setFormData(initialValue)
     setLoading(false);
     navigate("/userAddress");
   };

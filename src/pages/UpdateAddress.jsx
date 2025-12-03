@@ -27,7 +27,7 @@ const UpdateAddress = () => {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `http://localhost/api/address/update/${addressId}`,
+        `https://major-project-backend-nine.vercel.app/api/address/update/${addressId}`,
         {
           method: "POST",
           headers: {
@@ -190,7 +190,9 @@ export default UpdateAddress;
 export const loader = async ({ request, params }) => {
   const addressId = params.id;
 
-  const response = await fetch(`http://localhost/api/address/${addressId}`);
+  const response = await fetch(
+    `https://major-project-backend-nine.vercel.app/api/address/${addressId}`
+  );
 
   if (!response.ok) {
     throw new Response(

@@ -46,7 +46,7 @@ const Checkout = () => {
 
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost/api/order`, {
+      const response = await fetch(`https://major-project-backend-nine.vercel.app/api/order`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
