@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 
 export default function ProductCard({
@@ -7,18 +6,14 @@ export default function ProductCard({
   wishlist,
   handleAddToWishList,
   handleAddToCart,
- 
 }) {
- 
   const checkProductIsWishlist = (id) => {
-    return wishlist.some((product) => product.id === id);
+    return wishlist.some((product) => product._id === id);
   };
 
   const checkProductIsInCart = (id) => {
-    return productCart.some((cart) => cart.id === id);
+    return productCart.some((cart) => cart._id === id);
   };
-
-
 
   return (
     <div className="col-md-4 mb-4">
@@ -29,12 +24,12 @@ export default function ProductCard({
           className="btn btn-light position-absolute top-0 end-0 m-3 rounded-circle shadow-sm px-3 py-2"
           style={{ fontSize: "18px", zIndex: 10 }}
         >
-          {checkProductIsWishlist(product.id) ? "❤️" : "♡"}
+          {checkProductIsWishlist(product._id) ? "❤️" : "♡"}
         </button>
 
         {/* Product Image */}
         <Link
-          to={`/products/${product.id}`}
+          to={`/products/${product._id}`}
           className="text-decoration-none text-dark"
         >
           <img
@@ -69,7 +64,7 @@ export default function ProductCard({
 
           {/* Add to Cart Button */}
 
-          {checkProductIsInCart(product.id) ? (
+          {checkProductIsInCart(product._id) ? (
             <Link to="/cart" className="btn btn-dark px-4 py-2 ms-3">
               Go to Cart{" "}
             </Link>

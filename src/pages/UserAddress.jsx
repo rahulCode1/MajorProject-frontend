@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useEcommerce } from "../context/EcommerceContext";
 import { toast } from "react-hot-toast";
 import { useState } from "react";
-import {ThreeDots} from "react-loader-spinner"
+import { ThreeDots } from "react-loader-spinner";
 
 const UserAddress = () => {
   const [loading, setLoading] = useState(false);
@@ -13,12 +13,15 @@ const UserAddress = () => {
     const toastId = toast.loading("Address remove...");
     setLoading(true);
     try {
-      const response = await fetch(`https://major-project-backend-nine.vercel.app/api/address/${id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}address/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Something went wrong, Please try again later.");
@@ -40,7 +43,7 @@ const UserAddress = () => {
 
       {address && address.length > 0 ? (
         address.map((userAdd) => (
-          <div className="card mb-4 shadow-sm" key={userAdd.id}>
+          <div className="card mb-4 shadow-sm" key={userAdd._id}>
             <div className="card-body">
               <div className="d-flex justify-content-between align-items-center">
                 <h4 className="card-title mb-0">{userAdd.name}</h4>
@@ -83,7 +86,7 @@ const UserAddress = () => {
               <div className="row g-2">
                 <div className="col-6">
                   <Link
-                    to={`/address/${userAdd.id}`}
+                    to={`/address/${userAdd._id}`}
                     className="btn btn-primary w-100"
                   >
                     Update
@@ -92,11 +95,11 @@ const UserAddress = () => {
 
                 <div className="col-6">
                   <button
-                    onClick={() => removeAddress(userAdd.id)}
+                    onClick={() => removeAddress(userAdd._id)}
                     disabled={loading}
                     className="btn btn-danger w-100"
                   >
-                    {loading ? <ThreeDots height={20}/>: "Remove"}
+                    {loading ? <ThreeDots height={20} /> : "Remove"}
                   </button>
                 </div>
               </div>

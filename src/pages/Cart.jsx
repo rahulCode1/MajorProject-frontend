@@ -58,7 +58,7 @@ const Cart = () => {
                   {/* Quantity Controls */}
                   <div className="d-flex align-items-center mb-3">
                     <span className="me-3 fw-bold">Quantity:</span>
-
+          
                     <div
                       className="d-flex align-items-center border rounded-pill px-3 py-2"
                       style={{
@@ -67,16 +67,17 @@ const Cart = () => {
                       }}
                     >
                       <button
-                        onClick={() => handleDecreaseQuantity(product.id)}
+                        onClick={() => handleDecreaseQuantity(product._id)}
                         className="btn btn-light btn-sm rounded-circle shadow-sm"
                       >
+
                         −
                       </button>
 
                       <span className="fw-bold">{product.quantity}</span>
 
                       <button
-                        onClick={() => handleIncreaseQuantity(product.id)}
+                        onClick={() => handleIncreaseQuantity(product._id)}
                         className="btn btn-light btn-sm rounded-circle shadow-sm"
                       >
                         +
@@ -87,7 +88,7 @@ const Cart = () => {
                   {/* Buttons */}
                   <div className="d-flex gap-3">
                     <button
-                      onClick={() => handleRemoveFromCart(product.id)}
+                      onClick={() => handleRemoveFromCart(product._id)}
                       className="btn btn-outline-danger px-3"
                     >
                       Remove

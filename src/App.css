@@ -63,3 +63,10 @@
     transform: rotate(360deg);
   }
 }
+
+/* Add to your CSS file */
+@media (max-width: 767px) {
+  .mobile-filter-btn {
+    display: block !important;
+  }
+}

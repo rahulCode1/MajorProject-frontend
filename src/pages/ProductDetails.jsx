@@ -3,11 +3,10 @@ import { useEcommerce } from "../context/EcommerceContext";
 import COD from "../imgs/COD.png";
 import free from "../imgs/free.png";
 import payment from "../imgs/payment.png";
-import Loading from "../components/Loading";
 
 const ProductDetails = () => {
   const {
-    productsList,
+    
     productCart,
     wishlist,
     handleAddToWishList,
@@ -18,11 +17,11 @@ const ProductDetails = () => {
   const productInfo = productData.data.product;
 
   const checkProductIsWishlist = (id) => {
-    return wishlist.some((product) => product.id === id);
+    return wishlist.some((product) => product._id === id);
   };
 
   const checkProductIsInCart = (id) => {
-    return productCart.some((cart) => cart.id === id);
+    return productCart.some((cart) => cart._id === id);
   };
 
   return (
@@ -103,7 +102,7 @@ const ProductDetails = () => {
 
                 {/* Cart Button */}
 
-                {checkProductIsInCart(productInfo.id) ? (
+                {checkProductIsInCart(productInfo._id) ? (
                   <Link to={"/cart"} className="btn btn-dark px-4 py-2 ms-3">
                     Go to Cart
                   </Link>
@@ -118,7 +117,7 @@ const ProductDetails = () => {
 
                 {/* Wishlist Button */}
 
-                {checkProductIsWishlist(productInfo.id) ? (
+                {checkProductIsWishlist(productInfo._id) ? (
                   <Link
                     to="/wishlist"
                     className="btn btn-outline-dark px-4 py-2 ms-3"
@@ -188,38 +187,7 @@ const ProductDetails = () => {
         </div>
       </section>
 
-      <section className="container">
-        <hr />
-        <h3>More items you may like.</h3>
-        <div className="row">
-          {productsList &&
-            productsList.length > 0 &&
-            productsList.map((product) => (
-              <div className="col-md-4 text-center mb-3">
-                <div className="card">
-                  <Link className="text-decoration-none">
-                    <img
-                      src="https://shop.swarna.com/wp-content/uploads/2022/01/MG24311_2.jpg"
-                      className="card-img img-fluid"
-                    />
-                    <div className="card-body">
-                      <h5 className="card-text">{product.name}</h5>
-                      <p>
-                        <strong>{product.discountPrice}</strong>
-                      </p>
-                      <button
-                        onClick={() => handleAddToCart(product)}
-                        className="btn btn-secondary"
-                      >
-                        Add to Cart
-                      </button>
-                    </div>
-                  </Link>
-                </div>
-              </div>
-            ))}
-        </div>
-      </section>
+      
     </main>
   );
 };
@@ -227,9 +195,9 @@ const ProductDetails = () => {
 export default ProductDetails;
 
 export const loader = async ({ request, params }) => {
-  const productId = params.id;
+  const productId = params._id;
 
-  const response = await fetch(`https://major-project-backend-nine.vercel.app/api/product/${productId}`);
+  const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}product/${productId}`);
 
   if (!response.ok) {
     throw new Response(
