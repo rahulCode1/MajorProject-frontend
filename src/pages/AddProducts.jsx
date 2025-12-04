@@ -97,7 +97,7 @@ const AddProducts = () => {
     setLoading(true);
     try {
       const res = await fetch(
-        `https://major-project-backend-nine.vercel.app/product/add`,
+        `https://major-project-backend-nine.vercel.app/api/product/add`,
         {
           method: "POST",
           headers: {
