@@ -1,4 +1,4 @@
-// SortBy.jsx
+
 const SortBy = ({ sortBy, onChangeSortBy }) => {
   const SORT_OPTIONS = [
     { value: 'HighToLow', label: 'Price: High to Low' },

@@ -6,7 +6,7 @@ import { RotatingLines } from "react-loader-spinner";
 
 const UpdateAddress = () => {
   const [formData, setFormData] = useState({});
-  const [loading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { handleUpdateAddress } = useEcommerce();
   const addressId = useParams().id;
   const navigate = useNavigate();
@@ -41,21 +41,23 @@ const UpdateAddress = () => {
         throw new Error("Failed to update address, Please try again later.");
       }
 
+      setTimeout(() => {
+        setIsLoading(false);
+        navigate("/userAddress");
+
+        handleUpdateAddress(formData);
+      }, 1000);
+
       const data = await response.json();
     } catch (error) {
       throw new Error("Failed to update address, Please try again later.");
     }
-
-    setIsLoading(false);
-    navigate("/userAddress");
-
-    handleUpdateAddress(formData);
   };
 
   return (
     <main className="container">
       <h1>Update Address </h1>
-      {loading && (
+      {isLoading && (
         <div className="overlay m-auto">
           <RotatingLines strokeColor="#0f0e0eff" />
         </div>
@@ -75,7 +77,7 @@ const UpdateAddress = () => {
             value={formData.name}
             className="form-control"
             onChange={handleOnChange}
-            // required
+            required
           />
         </div>
         <div className="row">
@@ -89,7 +91,7 @@ const UpdateAddress = () => {
                 id="phoneNumber"
                 onChange={handleOnChange}
                 value={formData.phoneNumber}
-                // required
+                required
                 className="form-control"
               />
             </div>
@@ -104,7 +106,7 @@ const UpdateAddress = () => {
                 id="zipCode"
                 onChange={handleOnChange}
                 value={formData.zipCode}
-                // required
+                required
                 className="form-control"
               />
             </div>
@@ -121,7 +123,7 @@ const UpdateAddress = () => {
                 id="area"
                 onChange={handleOnChange}
                 value={formData.area}
-                // required
+                required
                 className="form-control"
               />
             </div>
@@ -136,7 +138,7 @@ const UpdateAddress = () => {
                 id="city"
                 onChange={handleOnChange}
                 value={formData.city}
-                // required
+                required
                 className="form-control"
               />
             </div>
@@ -150,7 +152,7 @@ const UpdateAddress = () => {
             id="fullAddress"
             onChange={handleOnChange}
             value={formData.fullAddress}
-            // required
+            required
             className="form-control"
             placeholder="Enter you full address with House number, Street, Near landmark"
           ></textarea>
@@ -161,7 +163,7 @@ const UpdateAddress = () => {
           <select
             id="state"
             onChange={handleOnChange}
-            // required
+            required
             className="form-select"
             value={formData.state}
           >
@@ -175,7 +177,7 @@ const UpdateAddress = () => {
         </div>
         <button
           type="submit"
-          disabled={loading}
+          disabled={isLoading}
           className="btn btn-primary my-3"
         >
           Update Address

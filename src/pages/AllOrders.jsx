@@ -1,7 +1,7 @@
 import { useEcommerce } from "../context/EcommerceContext";
 
 const AllOrders = () => {
-  const { userOrders } = useEcommerce();
+  const { userOrders, handleCancelOrder } = useEcommerce();
 
   const getStatusBadge = (status) => {
     const statusColors = {
@@ -17,6 +17,8 @@ const AllOrders = () => {
     return statusColors[status] || "secondary";
   };
 
+  
+
   return (
     <div className="container my-5">
       <div className="row mb-4">
@@ -31,7 +33,7 @@ const AllOrders = () => {
           {userOrders.map((order, index) => (
             <div className="col-12" key={order._id || index}>
               <div className="card shadow-sm border-0">
-                {/* Order Header */}
+            
                 <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                   <div>
                     <h5 className="mb-0">Order #{index + 1}</h5>
@@ -63,7 +65,7 @@ const AllOrders = () => {
 
                 <div className="card-body">
                   <div className="row">
-                    {/* Shipping Address */}
+                
                     <div className="col-lg-4 mb-3">
                       <div className="border rounded p-3 h-100 bg-light">
                         <h6 className="text-primary mb-3">
@@ -89,7 +91,7 @@ const AllOrders = () => {
                       </div>
                     </div>
 
-                    {/* Order Summary */}
+                
                     <div className="col-lg-4 mb-3">
                       <div className="border rounded p-3 h-100 bg-light">
                         <h6 className="text-primary mb-3">
@@ -126,7 +128,7 @@ const AllOrders = () => {
                       </div>
                     </div>
 
-                    {/* Quick Actions */}
+                   
                     <div className="col-lg-4 mb-3">
                       <div className="border rounded p-3 h-100 bg-light">
                         <h6 className="text-primary mb-3">
@@ -134,17 +136,16 @@ const AllOrders = () => {
                           Quick Actions
                         </h6>
                         <div className="d-grid gap-2">
-                          <button className="btn btn-outline-primary btn-sm">
-                            <i className="bi bi-eye me-2"></i>
-                            View Details
-                          </button>
                           <button className="btn btn-outline-secondary btn-sm">
                             <i className="bi bi-download me-2"></i>
                             Download Invoice
                           </button>
                           {order.orderStatus !== "cancelled" &&
                             order.orderStatus !== "delivered" && (
-                              <button className="btn btn-outline-danger btn-sm">
+                              <button
+                                onClick={() => handleCancelOrder(order._id)}
+                                className="btn btn-outline-danger btn-sm"
+                              >
                                 <i className="bi bi-x-circle me-2"></i>
                                 Cancel Order
                               </button>
@@ -154,7 +155,7 @@ const AllOrders = () => {
                     </div>
                   </div>
 
-                  {/* Products List */}
+                 
                   <div className="mt-4">
                     <h6 className="text-primary mb-3">
                       <i className="bi bi-box-seam me-2"></i>

@@ -5,13 +5,13 @@ import { useState } from "react";
 import { ThreeDots } from "react-loader-spinner";
 
 const UserAddress = () => {
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { address, handleRemoveAddress, handleSelectDefaultAddress } =
     useEcommerce();
 
   const removeAddress = async (id) => {
     const toastId = toast.loading("Address remove...");
-    setLoading(true);
+    setIsLoading(true);
     try {
       const response = await fetch(
         `${process.env.REACT_APP_BACKEND_URL}address/${id}`,
@@ -30,11 +30,11 @@ const UserAddress = () => {
       const data = await response.json();
 
       toast.success("Address removed successfully.", { id: toastId });
+      setIsLoading(false);
+      handleRemoveAddress(id);
     } catch (error) {
       toast.error("Failed to remove address.", { id: toastId });
     }
-    setLoading(false);
-    handleRemoveAddress(id);
   };
 
   return (
@@ -96,10 +96,10 @@ const UserAddress = () => {
                 <div className="col-6">
                   <button
                     onClick={() => removeAddress(userAdd._id)}
-                    disabled={loading}
+                    disabled={isLoading}
                     className="btn btn-danger w-100"
                   >
-                    {loading ? <ThreeDots height={20} /> : "Remove"}
+                    {isLoading ? <ThreeDots height={20} /> : "Remove"}
                   </button>
                 </div>
               </div>

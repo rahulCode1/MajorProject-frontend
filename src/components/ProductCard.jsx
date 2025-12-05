@@ -18,7 +18,7 @@ export default function ProductCard({
   return (
     <div className="col-md-4 mb-4">
       <div className="card text-center border-0 shadow-sm rounded-4 overflow-hidden position-relative">
-        {/* Wishlist Button */}
+       
         <button
           onClick={() => handleAddToWishList(product)}
           className="btn btn-light position-absolute top-0 end-0 m-3 rounded-circle shadow-sm px-3 py-2"
@@ -27,7 +27,7 @@ export default function ProductCard({
           {checkProductIsWishlist(product._id) ? "❤️" : "♡"}
         </button>
 
-        {/* Product Image */}
+     
         <Link
           to={`/products/${product._id}`}
           className="text-decoration-none text-dark"
@@ -49,12 +49,12 @@ export default function ProductCard({
         </Link>
 
         <div className="card-body p-4">
-          {/* Name */}
+       
           <h5 className="card-title fw-bold" style={{ fontSize: "1.2rem" }}>
             {product.name}
           </h5>
 
-          {/* Price */}
+      
           <p
             className="card-text mb-3"
             style={{ fontSize: "1.1rem", color: "#444" }}
@@ -62,7 +62,7 @@ export default function ProductCard({
             <strong>₹{product.discountPrice}</strong>
           </p>
 
-          {/* Add to Cart Button */}
+       
 
           {checkProductIsInCart(product._id) ? (
             <Link to="/cart" className="btn btn-dark px-4 py-2 ms-3">
@@ -70,7 +70,7 @@ export default function ProductCard({
             </Link>
           ) : (
             <button
-              onClick={() => handleAddToCart(product)}
+              onClick={() => handleAddToCart(product, 1)}
               className="btn btn-dark px-4 py-2 rounded-pill shadow-sm"
               style={{ letterSpacing: "0.5px" }}
             >

@@ -49,7 +49,7 @@ const Home = () => {
   return (
     <main className="py-4 bg-body-tertiary">
       <section className="container">
-        {/* ===== TOP CATEGORY IMAGES ===== */}
+       
         <div className="d-flex gap-3 w-100">
           {categories.map((data, i) => (
             <div key={i} className="flex-fill" style={{ minWidth: 0 }}>
@@ -62,19 +62,19 @@ const Home = () => {
                   alt={data.name}
                   className="img-fluid rounded w-100"
                   style={{
-                    height: "180px", // fixed height (same for all)
-                    objectFit: "cover", // crop to fit
-                    width: "100%", // ensure equal width
+                    height: "100px", 
+                    objectFit: "cover", 
+                    width: "100%", 
                     borderRadius: "12px",
                   }}
                 />
-                <h5>{data.name}</h5>
+                <p>{data.name}</p>
               </Link>
             </div>
           ))}
         </div>
 
-        {/* ===== WIDE BANNER ===== */}
+      
         <div className="my-5">
           <div className="rounded overflow-hidden shadow-sm">
             <Link
@@ -91,7 +91,7 @@ const Home = () => {
           </div>
         </div>
 
-        {/* ===== NEW ARRIVALS SECTION ===== */}
+       
         <div className="row g-4">
           {newArrival.map((product, i) => (
             <div className="col-md-6" key={i}>

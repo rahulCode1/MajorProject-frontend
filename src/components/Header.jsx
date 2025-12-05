@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import {  NavLink } from "react-router-dom";
 import { useEcommerce } from "../context/EcommerceContext";
+
 const Header = () => {
   const { setSearchText, productCart, wishlist } = useEcommerce();
 
@@ -12,9 +12,10 @@ const Header = () => {
   return (
     <nav className="navbar navbar-expand-lg bg-body-tertiary py-3">
       <div className="container-fluid container">
-        <Link className="navbar-brand" to="/">
+        <NavLink className="navbar-brand" to="/">
           Navbar
-        </Link>
+        </NavLink>
+
         <button
           className="navbar-toggler"
           type="button"
@@ -26,78 +27,126 @@ const Header = () => {
         >
           <span className="navbar-toggler-icon"></span>
         </button>
+
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+           
+
+            
             <li className="nav-item">
-              <Link className="nav-link active" aria-current="page" to="/">
-                Home
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link
-                className="nav-link active"
-                aria-current="page"
+              <NavLink
                 to="/products"
+                className={({ isActive }) =>
+                  isActive
+                    ? "nav-link px-3 py-2 rounded bg-dark text-white fw-semibold shadow-sm"
+                    : "nav-link px-3 py-2 text-dark fw-semibold"
+                }
               >
                 Products
-              </Link>
+              </NavLink>
             </li>
+
+         
             <li className="nav-item">
-              <Link className="nav-link active" aria-current="page" to="/add">
+              <NavLink
+                to="/add"
+                className={({ isActive }) =>
+                  isActive
+                    ? "nav-link px-3 py-2 rounded bg-dark text-white fw-semibold shadow-sm"
+                    : "nav-link px-3 py-2 text-dark fw-semibold"
+                }
+              >
                 Add Product
-              </Link>
+              </NavLink>
             </li>
+
             <li className="nav-item">
-              <Link to="/cart" className="nav-link active" aria-current="page">
+              <NavLink
+                to="/cart"
+                className={({ isActive }) =>
+                  isActive
+                    ? "nav-link px-3 py-2 rounded bg-dark text-white fw-semibold shadow-sm"
+                    : "nav-link px-3 py-2 text-dark fw-semibold"
+                }
+              >
                 Cart ({totalItemsInCart})
-              </Link>
+              </NavLink>
             </li>
+
+          
             <li className="nav-item">
-              <Link
+              <NavLink
                 to="/wishlist"
-                className="nav-link active"
-                aria-current="page"
+                className={({ isActive }) =>
+                  isActive
+                    ? "nav-link px-3 py-2 rounded bg-dark text-white fw-semibold shadow-sm"
+                    : "nav-link px-3 py-2 text-dark fw-semibold"
+                }
               >
                 Wishlist ({wishlist.length})
-              </Link>
+              </NavLink>
             </li>
+
+         
             <li className="nav-item">
-              <Link
+              <NavLink
                 to="/addAddress"
-                className="nav-link active"
-                aria-current="page"
+                className={({ isActive }) =>
+                  isActive
+                    ? "nav-link px-3 py-2 rounded bg-dark text-white fw-semibold shadow-sm"
+                    : "nav-link px-3 py-2 text-dark fw-semibold"
+                }
               >
                 Add Address
-              </Link>
+              </NavLink>
             </li>
+
+       
             <li className="nav-item">
-              <Link
+              <NavLink
                 to="/userAddress"
-                className="nav-link active"
-                aria-current="page"
+                className={({ isActive }) =>
+                  isActive
+                    ? "nav-link px-3 py-2 rounded bg-dark text-white fw-semibold shadow-sm"
+                    : "nav-link px-3 py-2 text-dark fw-semibold"
+                }
               >
                 User Address
-              </Link>
+              </NavLink>
             </li>
+
+           
+
+          
             <li className="nav-item">
-              <Link
-                to="/checkout"
-                className="nav-link active"
-                aria-current="page"
-              >
-                Checkout
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link
+              <NavLink
                 to="/orders"
-                className="nav-link active"
-                aria-current="page"
+                className={({ isActive }) =>
+                  isActive
+                    ? "nav-link px-3 py-2 rounded bg-dark text-white fw-semibold shadow-sm"
+                    : "nav-link px-3 py-2 text-dark fw-semibold"
+                }
               >
-                All Orders
-              </Link>
+                Orders
+              </NavLink>
+            </li>
+
+       
+            <li className="nav-item">
+              <NavLink
+                to="/user"
+                className={({ isActive }) =>
+                  isActive
+                    ? "nav-link px-3 py-2 rounded bg-dark text-white fw-semibold shadow-sm"
+                    : "nav-link px-3 py-2 text-dark fw-semibold"
+                }
+              >
+                Profile
+              </NavLink>
             </li>
           </ul>
+
+         
           <form className="d-flex" role="search">
             <input
               className="form-control me-2"

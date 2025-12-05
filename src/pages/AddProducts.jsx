@@ -28,7 +28,7 @@ const AddProducts = () => {
 
   const [formData, setFormData] = useState(initialFormData);
   const [tags, setTags] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { handleAddProducts } = useEcommerce();
   const navigate = useNavigate();
 
@@ -94,7 +94,7 @@ const AddProducts = () => {
       handleAddProducts(product);
     }
 
-    setLoading(true);
+    setIsLoading(true);
     try {
       const res = await fetch(
         `${process.env.REACT_APP_BACKEND_URL}product/add`,
@@ -113,13 +113,14 @@ const AddProducts = () => {
 
       const data = await res.json();
       toast.success("Product added successfully.", { id: tostId });
+      setTimeout(() => {
+        setFormData(initialFormData);
+        setIsLoading(false);
+        navigate("/products");
+      }, 1000);
     } catch (error) {
       toast.error("An error occurred while add new product.", { id: tostId });
     }
-
-    setLoading(false);
-    setFormData(initialFormData);
-    navigate("/products");
   };
 
   const tagsArray = [
@@ -143,7 +144,7 @@ const AddProducts = () => {
     <main className="container py-3">
       <h1>Add Product </h1>
 
-      {loading && (
+      {isLoading && (
         <div className="overlay">
           <RotatingLines strokeColor="#000000ff" />
         </div>
@@ -192,6 +193,7 @@ const AddProducts = () => {
             rows={8}
             required
             onChange={handleOnChange}
+            placeholder="Enter product description"
           />
         </div>
 
@@ -209,6 +211,7 @@ const AddProducts = () => {
                 placeholder="Enter Product price"
                 className="form-control"
                 required
+                min={0}
                 onChange={handleOnChange}
               />
             </div>
@@ -226,6 +229,7 @@ const AddProducts = () => {
                 placeholder="Enter discount price"
                 className="form-control"
                 required
+                min={0}
                 onChange={handleOnChange}
               />
             </div>
@@ -246,12 +250,12 @@ const AddProducts = () => {
                 placeholder="Enter cost price"
                 className="form-control"
                 required
+                min={0}
                 onChange={handleOnChange}
               />
             </div>
           </div>
           <div className="col">
-            {" "}
             <div className="">
               <label htmlFor="length" className="form-label">
                 Length
@@ -261,7 +265,7 @@ const AddProducts = () => {
                 id="length"
                 name="length"
                 value={formData.length}
-                placeholder="Enter product Length"
+                placeholder="Enter product Length in cm"
                 className="form-control"
                 required
                 onChange={handleOnChange}
@@ -280,7 +284,7 @@ const AddProducts = () => {
                 id="width"
                 name="width"
                 value={formData.width}
-                placeholder="Enter product width"
+                placeholder="Enter product width in cm"
                 className="form-control"
                 required
                 onChange={handleOnChange}
@@ -288,7 +292,6 @@ const AddProducts = () => {
             </div>
           </div>
           <div className="col">
-            {" "}
             <div className="">
               <label htmlFor="height" className="form-label">
                 Height
@@ -298,7 +301,7 @@ const AddProducts = () => {
                 id="height"
                 name="height"
                 value={formData.height}
-                placeholder="Enter product height"
+                placeholder="Enter product height in cm"
                 required
                 className="form-control"
                 onChange={handleOnChange}
@@ -318,14 +321,13 @@ const AddProducts = () => {
             value={formData.weight}
             required
             onChange={handleOnChange}
-            placeholder="Enter product weight"
+            placeholder="Enter product weight in kg"
             className="form-control"
           />
         </div>
 
         <div className="row">
           <div className="col">
-            {" "}
             <div className="">
               <label htmlFor="materialType" className="form-label">
                 Material Type
@@ -351,7 +353,6 @@ const AddProducts = () => {
             </div>
           </div>
           <div className="col">
-            {" "}
             <div className="">
               <label htmlFor="category" className="form-label">
                 Select Category
@@ -388,6 +389,7 @@ const AddProducts = () => {
             className="form-control"
             rows={8}
             required
+            placeholder="Enter product care with comma separated"
             onChange={handleOnChange}
           />
         </div>
@@ -429,7 +431,6 @@ const AddProducts = () => {
           />
         </div>
 
-        {/* Meta Title - Input */}
         <div className="mb-3">
           <label htmlFor="metaTitle" className="form-label">
             Meta Title
@@ -447,7 +448,6 @@ const AddProducts = () => {
           />
         </div>
 
-        {/* Meta Description - Textarea */}
         <div className="mb-3">
           <label htmlFor="metaDescription" className="form-label">
             Meta Description
@@ -482,7 +482,7 @@ const AddProducts = () => {
         </div>
         <br />
         <br />
-        <button disabled={loading} type="submit" className="btn btn-primary">
+        <button disabled={isLoading} type="submit" className="btn btn-primary">
           Add Product
         </button>
       </Form>

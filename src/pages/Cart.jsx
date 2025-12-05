@@ -7,6 +7,9 @@ import {
 } from "../functions/reUseFunctions";
 
 const Cart = () => {
+
+  
+
   const {
     productCart,
     handleIncreaseQuantity,
@@ -21,7 +24,7 @@ const Cart = () => {
         productCart.map((product) => (
           <div className="card mb-4 shadow-sm border-0 rounded-3">
             <div className="row g-0">
-              {/* Product Image */}
+             
               <div className="col-md-4">
                 <img
                   src={product.image}
@@ -31,13 +34,13 @@ const Cart = () => {
                 />
               </div>
 
-              {/* Product Info */}
+            
               <div className="col-md-8 d-flex align-items-center">
                 <div className="card-body">
-                  {/* Name */}
+              
                   <h4 className="fw-bold mb-2">{product.name}</h4>
 
-                  {/* Price */}
+               
                   <p className="mb-2">
                     <span className="fw-bold text-success fs-4">
                       ₹{product.discountPrice}
@@ -50,12 +53,12 @@ const Cart = () => {
                     </span>
                   </p>
 
-                  {/* Discount */}
+               
                   <p className="text-muted small mb-3">
                     You save ₹{product.price - product.discountPrice}!
                   </p>
 
-                  {/* Quantity Controls */}
+              
                   <div className="d-flex align-items-center mb-3">
                     <span className="me-3 fw-bold">Quantity:</span>
           
@@ -85,7 +88,7 @@ const Cart = () => {
                     </div>
                   </div>
 
-                  {/* Buttons */}
+                  
                   <div className="d-flex gap-3">
                     <button
                       onClick={() => handleRemoveFromCart(product._id)}
@@ -112,7 +115,7 @@ const Cart = () => {
         </p>
       )}
 
-      {/* Checkout Box */}
+
       {productCart && productCart.length > 0 && (
         <div className="card shadow-sm border-0 rounded-3 p-4 mt-4">
           <h4 className="fw-bold mb-3">Checkout Summary</h4>

@@ -15,6 +15,7 @@ import UserAddress from './pages/UserAddress';
 import UpdateAddress, { loader as addressUpdateLoader } from './pages/UpdateAddress';
 import Checkout from './pages/Checkout';
 import AllOrders from './pages/AllOrders';
+import UserProfile from "./pages/UserProfile"
 
 function App() {
 
@@ -33,7 +34,8 @@ function App() {
         { path: "/userAddress", element: <UserAddress /> },
         { path: "/address/:id", element: <UpdateAddress />, loader: addressUpdateLoader },
         { path: "/checkout", element: <Checkout /> },
-        { path: "/orders", element: <AllOrders /> }
+        { path: "/orders", element: <AllOrders /> },
+        { path: "/user", element: <UserProfile /> }
       ]
     }
   ])

@@ -90,51 +90,32 @@ const Products = () => {
   return (
     <main className="">
       <div className="row">
-        {/* FILTER BUTTON - MOBILE ONLY */}
-        <div
-          className="mobile-filter-btn d-md-none position-fixed bottom-0 start-0 end-0 p-3 bg-white border-top shadow-lg"
-          style={{ zIndex: 1000 }}
-        >
+      
+        <div class="text-end d-lg-none">
           <button
-            className="btn btn-dark w-100 py-3 text-uppercase fw-semibold d-flex align-items-center justify-content-center gap-2"
-            type="button"
+            class="btn p-2 bg-transparent border-0"
             data-bs-toggle="offcanvas"
-            data-bs-target="#filterOffcanvas"
-            style={{ letterSpacing: "1px", fontSize: "0.9rem" }}
+            data-bs-target="#offcanvasResponsive"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              fill="currentColor"
-              className="bi bi-funnel"
-              viewBox="0 0 16 16"
-            >
-              <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2h-11z" />
-            </svg>
-            Filters & Sort
+            <i class="bi bi-funnel fs-4"></i>
           </button>
         </div>
 
-        {/* OFFCANVAS FOR MOBILE */}
         <div
-          className="offcanvas offcanvas-start"
-          tabIndex="-1"
-          id="filterOffcanvas"
-          aria-labelledby="filterOffcanvasLabel"
+          class="offcanvas offcanvas-end"
+          tabindex="-1"
+          id="offcanvasResponsive"
         >
-          <div className="offcanvas-header border-bottom">
-            <h5 className="offcanvas-title fw-bold" id="filterOffcanvasLabel">
-              Filters & Sort
-            </h5>
+          <div class="offcanvas-header">
+         
             <button
               type="button"
-              className="btn-close"
+              class="btn-close"
               data-bs-dismiss="offcanvas"
-              aria-label="Close"
             ></button>
           </div>
-          <div className="offcanvas-body p-0">
+
+          <div class="offcanvas-body">
             <div className="p-3">
               <div className="d-flex align-items-center justify-content-between mb-3">
                 <strong>Filters</strong>
@@ -219,20 +200,11 @@ const Products = () => {
                   </label>
                 </div>
               </div>
-
-              <div className="p-3 border-top bg-light">
-                <button
-                  className="btn btn-dark w-100 py-2"
-                  data-bs-dismiss="offcanvas"
-                >
-                  Apply Filters
-                </button>
-              </div>
             </div>
           </div>
         </div>
 
-        {/* DESKTOP FILTER SIDEBAR */}
+      
         <div className="col-md-3 d-none d-md-block border-end bg-white">
           <section className="p-3 sticky-top" style={{ top: "20px" }}>
             <div className="d-flex align-items-center justify-content-between mb-4">
@@ -321,7 +293,7 @@ const Products = () => {
           </section>
         </div>
 
-        {/* PRODUCTS SECTION */}
+      
         <div className="col-md-9 bg-light min-vh-100 p-3 pb-5 mb-5 mb-md-0">
           <section>
             <div className="row">

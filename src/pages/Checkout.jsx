@@ -7,7 +7,7 @@ import { useState } from "react";
 
 const Checkout = () => {
   const [payment, setPayment] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { productCart, address, handleSelectDefaultAddress, handlePlaceOrder } =
     useEcommerce();
   const navigate = useNavigate();
@@ -42,36 +42,41 @@ const Checkout = () => {
         totalDiscount,
         totalQuantity,
       },
+      paymentStatus: payment,
     };
 
-    setLoading(true);
+    setIsLoading(true);
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}order`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(order),
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}order`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(order),
+        }
+      );
       if (!response.ok) {
         throw new Error("Failed to place order.");
       }
 
       const data = await response.json();
+      handlePlaceOrder(order);
 
+      setTimeout(() => {
+        setIsLoading(false);
+        navigate("/orders");
+      }, 1000);
       toast.success("Order place successfully.", { id: toastId });
     } catch (error) {
       toast.error("Error occurred while place order.", { id: toastId });
     }
-
-    setLoading(false);
-    navigate("/orders");
-    handlePlaceOrder(order);
   };
 
   return (
     <main className="container py-4">
-      {loading && (
+      {isLoading && (
         <div className="overlay">
           <RotatingLines strokeColor="#000000ff" />
         </div>
@@ -82,7 +87,7 @@ const Checkout = () => {
       )}
 
       <div className="row g-4">
-        {/* LEFT SIDE - Address Selection */}
+       
         <div className="col-md-6">
           {address && address.length > 0 ? (
             address.map((userAdd) => (
@@ -147,7 +152,7 @@ const Checkout = () => {
           )}
         </div>
 
-        {/* RIGHT SIDE - Order Summary */}
+     
         <div className="col-md-6">
           {productCart && productCart.length > 0 ? (
             <div className="card shadow-sm">
@@ -188,7 +193,7 @@ const Checkout = () => {
 
                 <button
                   onClick={handleSubmitOrder}
-                  disabled={loading}
+                  disabled={isLoading}
                   className="btn btn-success w-100 py-2 fw-bold"
                 >
                   Place Order

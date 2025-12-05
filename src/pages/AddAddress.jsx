@@ -16,9 +16,9 @@ const AddAddress = () => {
     state: "",
   };
   const [formData, setFormData] = useState(initialValue);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { handleAddAddress , fetchUserAddress} = useEcommerce();
+  const { handleAddAddress, fetchUserAddress } = useEcommerce();
 
   const handleOnChange = (e) => {
     setFormData((prevStat) => ({ ...prevStat, [e.target.id]: e.target.value }));
@@ -27,37 +27,43 @@ const AddAddress = () => {
   const submitAddress = async (e) => {
     e.preventDefault();
     const tostId = toast.loading("Adding Addresses...");
-    handleAddAddress(formData);
 
-    setLoading(true);
+    setIsLoading(true);
     try {
-      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}address/new`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      const res = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}address/new`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
 
       if (!res.ok) {
         throw new Error("Failed to add new address.");
       }
 
       const data = await res.json();
+      handleAddAddress(formData);
+      await fetchUserAddress();
+      setFormData(initialValue);
+      setTimeout(() => {
+        setIsLoading(false);
+        navigate("/userAddress");
+      }, 1000);
+
       toast.success("Address added successfully.", { id: tostId });
     } catch (error) {
       toast.error("Something went wrong while add new address", { id: tostId });
     }
-
-    fetchUserAddress()
-    setFormData(initialValue)
-    setLoading(false);
-    navigate("/userAddress");
   };
+
   return (
     <main className="container">
       <h1>Address </h1>
-      {loading && (
+      {isLoading && (
         <div className="overlay">
           <RotatingLines strokeColor="#000000ff" />
         </div>
@@ -77,7 +83,8 @@ const AddAddress = () => {
             value={formData.name}
             className="form-control"
             onChange={handleOnChange}
-            // required
+            required
+            placeholder="Enter your full name."
           />
         </div>
         <div className="row">
@@ -91,7 +98,8 @@ const AddAddress = () => {
                 id="phoneNumber"
                 onChange={handleOnChange}
                 value={formData.phoneNumber}
-                // required
+                required
+                placeholder="Enter your 10 digits phone number."
                 className="form-control"
               />
             </div>
@@ -106,7 +114,8 @@ const AddAddress = () => {
                 id="zipCode"
                 onChange={handleOnChange}
                 value={formData.zipCode}
-                // required
+                required
+                placeholder="Enter your zipcode."
                 className="form-control"
               />
             </div>
@@ -123,7 +132,8 @@ const AddAddress = () => {
                 id="area"
                 onChange={handleOnChange}
                 value={formData.area}
-                // required
+                required
+                placeholder="Enter your area name."
                 className="form-control"
               />
             </div>
@@ -138,7 +148,8 @@ const AddAddress = () => {
                 id="city"
                 onChange={handleOnChange}
                 value={formData.city}
-                // required
+                required
+                placeholder="Enter your city name."
                 className="form-control"
               />
             </div>
@@ -152,7 +163,7 @@ const AddAddress = () => {
             id="fullAddress"
             onChange={handleOnChange}
             value={formData.fullAddress}
-            // required
+            required
             className="form-control"
             placeholder="Enter you full address with House number, Street, Near landmark"
           ></textarea>
@@ -163,7 +174,7 @@ const AddAddress = () => {
           <select
             id="state"
             onChange={handleOnChange}
-            // required
+            required
             className="form-select"
           >
             <option value={""} disabled>
@@ -177,7 +188,7 @@ const AddAddress = () => {
           </select>
         </div>
         <button
-          disabled={loading}
+          disabled={isLoading}
           type="submit"
           className="btn btn-primary my-3"
         >

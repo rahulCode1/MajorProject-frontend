@@ -130,7 +130,7 @@ const EcommerceProvider = ({ children }) => {
     }
   };
 
-  const handleAddToCart = async (product) => {
+  const handleAddToCart = async (product, quantity) => {
     const tostId = toast.loading("Adding to cart...");
 
     try {
@@ -141,7 +141,7 @@ const EcommerceProvider = ({ children }) => {
         },
         body: JSON.stringify({
           productId: product._id,
-          quantity: 1,
+          quantity,
           userId: "691c67a89e37556adb6635f8",
         }),
       });
@@ -165,7 +165,7 @@ const EcommerceProvider = ({ children }) => {
             : cart;
         });
       } else {
-        return [...prevCart, { ...product, quantity: 1 }];
+        return [...prevCart, { ...product, quantity }];
       }
     });
 
@@ -173,6 +173,7 @@ const EcommerceProvider = ({ children }) => {
   };
 
   const handleIncreaseQuantity = async (productId) => {
+    const toastId = toast.loading("Increase quantity...");
     try {
       const response = await fetch(
         `${process.env.REACT_APP_BACKEND_URL}cart/691c67a89e37556adb6635f8`,
@@ -190,9 +191,10 @@ const EcommerceProvider = ({ children }) => {
       if (!response.ok) {
         throw new Error("Failed to increase product quantity in  cart.");
       }
-
+      toast.success("Quantity increased", { id: toastId });
       const data = await response.json();
     } catch (error) {
+      toast.error("Failed to increase quantity", { id: toastId });
       throw new Error("Error occurred while increase product quantity.");
     }
 
@@ -206,6 +208,7 @@ const EcommerceProvider = ({ children }) => {
   };
 
   const handleDecreaseQuantity = async (productId) => {
+    const toastId = toast.loading("Decrease quantity...");
     try {
       const response = await fetch(
         `${process.env.REACT_APP_BACKEND_URL}cart/decrease/691c67a89e37556adb6635f8`,
@@ -225,7 +228,9 @@ const EcommerceProvider = ({ children }) => {
       }
 
       const data = await response.json();
+      toast.success("Quantity decreased", { id: toastId });
     } catch (error) {
+      toast.error("Failed to decrease quantity", { id: toastId });
       throw new Error("Error occurred while decrease product quantity.");
     }
 
@@ -319,8 +324,32 @@ const EcommerceProvider = ({ children }) => {
     });
   };
 
-  const handleWishListToCart = (product) => {
+  const handleWishListToCart = async (product) => {
     const tostId = toast.loading("Adding to cart...");
+
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}wishlist/691c67a89e37556adb6635f8`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ productId: product._id }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Product not move to cart.");
+      }
+
+      const data = await response.json();
+
+      console.log(data);
+    } catch (error) {
+      throw new Error("Error occurred while move to cart.");
+    }
+
     setProductCart((prevStat) => {
       const exist = prevStat.find((cartPrd) => cartPrd._id === product._id);
 
@@ -337,13 +366,37 @@ const EcommerceProvider = ({ children }) => {
       }
     });
 
-    // setWishList((prevStat) =>
-    //   prevStat.filter((wishPrd) => wishPrd._id !== product._id)
-    // );
+    setWishList((prevStat) =>
+      prevStat.filter((wishPrd) => wishPrd._id !== product._id)
+    );
   };
 
-  const handleCartToWishList = (product) => {
+  const handleCartToWishList = async (product) => {
     const tostId = toast.loading("Adding to wishlist...");
+
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}cart/moveto_wishlist/691c67a89e37556adb6635f8`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ productId: product._id }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Product not move to wishlist.");
+      }
+
+      const data = await response.json();
+
+      console.log(data);
+    } catch (error) {
+      throw new Error("Error occurred while move to wishlist.");
+    }
+
     setWishList((prevStat) => {
       const exist = prevStat.find((wishPrd) => wishPrd._id === product._id);
 
@@ -419,9 +472,60 @@ const EcommerceProvider = ({ children }) => {
 
     await fetchUserAddress();
   };
+  const handleClearCart = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}cart/clear_cart/691c67a89e37556adb6635f8`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Types": "application/json",
+          },
+        }
+      );
 
-  const handlePlaceOrder = (order) => {
+      if (!response.ok) {
+        throw new Error("Cart not clear.");
+      }
+
+      const data = await response.json();
+    } catch (error) {
+      throw new Error("Error occurred while clear cart.");
+    }
+  };
+
+  const handleCancelOrder = async (id) => {
+    const toastId = toast.loading("Order cancel...");
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}order/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Error occurred while cancel order.");
+      }
+
+      const data = await response.json();
+
+      toast.success("Order canceled successfully.", { id: toastId });
+    } catch (error) {
+      toast.success("Error occurred while cancel order.", { id: toastId });
+      throw new Error("Failed to cancel order.");
+    }
+
+    setUserOrders((prevStat) => prevStat.filter((order) => order._id !== id));
+  };
+
+  const handlePlaceOrder = async (order) => {
+    await handleClearCart();
     setUserOrders((prevStat) => [...prevStat, order]);
+    setProductCart([]);
   };
 
   useEffect(() => {
@@ -467,6 +571,7 @@ const EcommerceProvider = ({ children }) => {
         handleUpdateAddress,
         handleSelectDefaultAddress,
         handlePlaceOrder,
+        handleCancelOrder,
       }}
     >
       {children}

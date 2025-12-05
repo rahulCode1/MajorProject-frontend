@@ -3,20 +3,15 @@ import { useEcommerce } from "../context/EcommerceContext";
 import COD from "../imgs/COD.png";
 import free from "../imgs/free.png";
 import payment from "../imgs/payment.png";
+import { useState } from "react";
 
 const ProductDetails = () => {
-  const {
-    
-    productCart,
-    wishlist,
-    handleAddToWishList,
-    handleAddToCart,
-  } = useEcommerce();
+  const [quantity, setQuantity] = useState(1);
+  const { productCart, wishlist, handleAddToWishList, handleAddToCart } =
+    useEcommerce();
 
   const productData = useLoaderData();
   const productInfo = productData.data.product;
-
-
 
   const checkProductIsWishlist = (id) => {
     return wishlist.some((product) => product._id === id);
@@ -30,7 +25,7 @@ const ProductDetails = () => {
     <main className="py-3">
       <section className="container py-5">
         <div className="row gy-5">
-          {/* LEFT IMAGE */}
+          
           <div className="col-md-6 d-flex justify-content-center">
             <div
               className="border rounded shadow-sm overflow-hidden"
@@ -44,14 +39,14 @@ const ProductDetails = () => {
             </div>
           </div>
 
-          {/* RIGHT DETAILS */}
+        
           <div className="col-md-6">
-            {/* PRODUCT TITLE */}
+           
             <h1 className="fw-bold text-dark mb-3" style={{ fontSize: "2rem" }}>
               {productInfo.name}
             </h1>
 
-            {/* PRICE SECTION */}
+           
             <div className="mb-3">
               <span
                 className="fw-bold text-success"
@@ -69,7 +64,7 @@ const ProductDetails = () => {
 
             <hr />
 
-            {/* SHORT DESCRIPTION */}
+          
             <p className="text-muted mb-2" style={{ fontSize: "1.1rem" }}>
               {productInfo.shortDescription}
             </p>
@@ -81,28 +76,35 @@ const ProductDetails = () => {
 
             <hr />
 
-            {/* QUANTITY + CART + WISHLIST */}
+           
             <div className="mb-4">
               <label className="fw-bold mb-2 d-block">Quantity</label>
 
               <div className="d-flex align-items-center">
-                {/* Quantity Box */}
+             
                 <div
                   className="d-flex align-items-center border rounded-pill px-3 py-2"
                   style={{ width: "150px", justifyContent: "space-between" }}
                 >
-                  <button className="btn btn-outline-dark btn-sm rounded-circle">
+                  <button
+                    disabled={quantity === 1}
+                    onClick={() => setQuantity((prevStat) => prevStat - 1)}
+                    className="btn btn-outline-dark btn-sm rounded-circle"
+                  >
                     −
                   </button>
 
-                  <span className="fw-bold">1</span>
+                  <span className="fw-bold">{quantity}</span>
 
-                  <button className="btn btn-outline-dark btn-sm rounded-circle">
+                  <button
+                    onClick={() => setQuantity((prevStat) => prevStat + 1)}
+                    className="btn btn-outline-dark btn-sm rounded-circle"
+                  >
                     +
                   </button>
                 </div>
 
-                {/* Cart Button */}
+               
 
                 {checkProductIsInCart(productInfo._id) ? (
                   <Link to={"/cart"} className="btn btn-dark px-4 py-2 ms-3">
@@ -110,14 +112,14 @@ const ProductDetails = () => {
                   </Link>
                 ) : (
                   <button
-                    onClick={() => handleAddToCart(productInfo)}
+                    onClick={() => handleAddToCart(productInfo, quantity)}
                     className="btn btn-dark px-4 py-2 ms-3"
                   >
                     Add to Cart
                   </button>
                 )}
 
-                {/* Wishlist Button */}
+               
 
                 {checkProductIsWishlist(productInfo._id) ? (
                   <Link
@@ -139,7 +141,7 @@ const ProductDetails = () => {
 
             <hr />
 
-            {/* FEATURES */}
+         
             <div className="d-flex text-center mb-4">
               <div className="me-4">
                 <img
@@ -171,7 +173,7 @@ const ProductDetails = () => {
 
             <hr />
 
-            {/* EXTRA DETAILS */}
+      
             <div className="mt-3">
               <p>
                 <strong>Category:</strong> {productInfo.category}
@@ -188,8 +190,6 @@ const ProductDetails = () => {
           </div>
         </div>
       </section>
-
-      
     </main>
   );
 };
@@ -199,7 +199,9 @@ export default ProductDetails;
 export const loader = async ({ request, params }) => {
   const productId = params.id;
 
-  const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}product/${productId}`);
+  const response = await fetch(
+    `${process.env.REACT_APP_BACKEND_URL}product/${productId}`
+  );
 
   if (!response.ok) {
     throw new Response(
