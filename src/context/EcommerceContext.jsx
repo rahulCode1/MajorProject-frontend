@@ -496,6 +496,9 @@ const EcommerceProvider = ({ children }) => {
 
   const handleCancelOrder = async (id) => {
     const toastId = toast.loading("Order cancel...");
+
+    console.log(id)
+
     try {
       const response = await fetch(
         `${process.env.REACT_APP_BACKEND_URL}order/${id}`,
@@ -526,6 +529,7 @@ const EcommerceProvider = ({ children }) => {
     await handleClearCart();
     setUserOrders((prevStat) => [...prevStat, order]);
     setProductCart([]);
+    fetchAllOrders()
   };
 
   useEffect(() => {

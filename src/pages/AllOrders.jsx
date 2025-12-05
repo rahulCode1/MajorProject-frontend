@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useEcommerce } from "../context/EcommerceContext";
 
 const AllOrders = () => {
@@ -228,10 +229,10 @@ const AllOrders = () => {
                 <i className="bi bi-cart-x display-1 text-muted mb-3"></i>
                 <h3 className="text-muted">No Orders Found</h3>
                 <p className="text-muted">You haven't placed any orders yet.</p>
-                <button className="btn btn-primary mt-3">
+                <Link to="/products" className="btn btn-primary mt-3">
                   <i className="bi bi-shop me-2"></i>
                   Start Shopping
-                </button>
+                </Link>
               </div>
             </div>
           </div>

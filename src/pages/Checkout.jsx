@@ -6,7 +6,7 @@ import { RotatingLines } from "react-loader-spinner";
 import { useState } from "react";
 
 const Checkout = () => {
-  const [payment, setPayment] = useState("");
+  const [payment, setPayment] = useState("cod");
   const [isLoading, setIsLoading] = useState(false);
   const { productCart, address, handleSelectDefaultAddress, handlePlaceOrder } =
     useEcommerce();
@@ -42,7 +42,7 @@ const Checkout = () => {
         totalDiscount,
         totalQuantity,
       },
-      paymentStatus: payment,
+      paymentMethod: payment,
     };
 
     setIsLoading(true);
@@ -57,17 +57,19 @@ const Checkout = () => {
           body: JSON.stringify(order),
         }
       );
+
       if (!response.ok) {
         throw new Error("Failed to place order.");
       }
 
       const data = await response.json();
-      handlePlaceOrder(order);
 
-      setTimeout(() => {
-        setIsLoading(false);
-        navigate("/orders");
-      }, 1000);
+      console.log(data);
+
+      handlePlaceOrder(order);
+      setIsLoading(false);
+      navigate("/orders");
+
       toast.success("Order place successfully.", { id: toastId });
     } catch (error) {
       toast.error("Error occurred while place order.", { id: toastId });
@@ -87,7 +89,6 @@ const Checkout = () => {
       )}
 
       <div className="row g-4">
-       
         <div className="col-md-6">
           {address && address.length > 0 ? (
             address.map((userAdd) => (
@@ -152,7 +153,6 @@ const Checkout = () => {
           )}
         </div>
 
-     
         <div className="col-md-6">
           {productCart && productCart.length > 0 ? (
             <div className="card shadow-sm">
@@ -184,10 +184,9 @@ const Checkout = () => {
                   id="payment"
                   className="form-select mb-3"
                 >
-                  <option value="" disabled>
-                    Select Payment Method
+                  <option value="cod" selected>
+                    Cash On Delivery
                   </option>
-                  <option value="cod">Cash On Delivery</option>
                   <option value="online">Pay Online</option>
                 </select>
 
