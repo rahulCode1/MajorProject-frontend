@@ -16,6 +16,8 @@ const ProductDetails = () => {
   const productData = useLoaderData();
   const productInfo = productData.data.product;
 
+
+
   const checkProductIsWishlist = (id) => {
     return wishlist.some((product) => product._id === id);
   };
@@ -195,7 +197,7 @@ const ProductDetails = () => {
 export default ProductDetails;
 
 export const loader = async ({ request, params }) => {
-  const productId = params._id;
+  const productId = params.id;
 
   const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}product/${productId}`);
 
