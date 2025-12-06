@@ -48,7 +48,7 @@ const Checkout = () => {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}order`,
+        `${process.env.REACT_APP_BACKEND_URL}order/691c67a89e37556adb6635f8`,
         {
           method: "POST",
           headers: {
@@ -67,8 +67,11 @@ const Checkout = () => {
       console.log(data);
 
       handlePlaceOrder(order);
-      setIsLoading(false);
-      navigate("/orders");
+
+      setTimeout(() => {
+        setIsLoading(false);
+        navigate("/orders");
+      }, 1000);
 
       toast.success("Order place successfully.", { id: toastId });
     } catch (error) {

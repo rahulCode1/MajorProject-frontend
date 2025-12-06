@@ -70,7 +70,9 @@ const EcommerceProvider = ({ children }) => {
 
   const fetchAllOrders = async () => {
     try {
-      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}order`);
+      const res = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}order/691c67a89e37556adb6635f8`
+      );
 
       if (!res.ok) {
         throw new Error("Error occurred while fetching order.");
@@ -497,7 +499,7 @@ const EcommerceProvider = ({ children }) => {
   const handleCancelOrder = async (id) => {
     const toastId = toast.loading("Order cancel...");
 
-    console.log(id)
+    console.log(id);
 
     try {
       const response = await fetch(
@@ -529,7 +531,7 @@ const EcommerceProvider = ({ children }) => {
     await handleClearCart();
     setUserOrders((prevStat) => [...prevStat, order]);
     setProductCart([]);
-    fetchAllOrders()
+    fetchAllOrders();
   };
 
   useEffect(() => {
