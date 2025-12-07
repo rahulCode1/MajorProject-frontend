@@ -1,6 +1,6 @@
 const CategoryFilter = ({handleOnChangeCategory, filterCategory}) => {
   const categories = [
-    { id: "KitchenDining", value: "KitchenDining", label: "Kitchen" },
+    { id: "KitchenDining", value: "KitchenDining", label: "Kitchen & Dining" },
     { id: "HomeDecor", value: "HomeDecor", label: "Home & Decor" },
     { id: "ReligiousItems", value: "ReligiousItems", label: "Religious Items" },
     { id: "CorporateGifts", value: "CorporateGifts", label: "Corporate Gifts" },

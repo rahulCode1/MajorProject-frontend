@@ -12,6 +12,11 @@ const EcommerceProvider = ({ children }) => {
   const [searchText, setSearchText] = useState("");
   const [address, setAddress] = useState([]);
   const [userOrders, setUserOrders] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingAddress, setIsLoadingAddress] = useState(false);
+  const [isLoadingWishlist, setIsLoadingWishlist] = useState(false);
+  const [isLoadingOrders, setIsLoadingOrders] = useState(false);
+  const [isLoadingCart, setIsLoadingCart] = useState(false);
 
   const handleAddProducts = async (products) => {
     setProductList((prevStat) => [
@@ -28,6 +33,8 @@ const EcommerceProvider = ({ children }) => {
     }
 
     try {
+      setIsLoading(true);
+
       const res = await fetch(url);
 
       if (!res.ok) {
@@ -42,6 +49,7 @@ const EcommerceProvider = ({ children }) => {
       }));
 
       setProductList(transFormDat || []);
+      setIsLoading(false);
     } catch (error) {
       console.error("Failed to fetch products:", error);
     }
@@ -49,6 +57,7 @@ const EcommerceProvider = ({ children }) => {
 
   const fetchUserAddress = async () => {
     try {
+      setIsLoadingAddress(true);
       const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}address`);
 
       if (!res.ok) {
@@ -63,6 +72,7 @@ const EcommerceProvider = ({ children }) => {
       }));
 
       setAddress(transformAddress || []);
+      setIsLoadingAddress(false);
     } catch (error) {
       console.error("Failed to fetch products:", error);
     }
@@ -70,8 +80,9 @@ const EcommerceProvider = ({ children }) => {
 
   const fetchAllOrders = async () => {
     try {
+      setIsLoadingOrders(true);
       const res = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}order/691c67a89e37556adb6635f8`
+        `${process.env.REACT_APP_BACKEND_URL}order/6933ec16fa9368ef6b374eda`
       );
 
       if (!res.ok) {
@@ -81,6 +92,7 @@ const EcommerceProvider = ({ children }) => {
       const data = await res.json();
       const orders = data.data?.orders;
       setUserOrders(orders || []);
+      setIsLoadingOrders(false);
     } catch (error) {
       throw new Error("Failed to fetch orders.");
     }
@@ -88,8 +100,9 @@ const EcommerceProvider = ({ children }) => {
 
   const fetchUserCarts = async () => {
     try {
+      setIsLoadingCart(true);
       const res = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}cart/691c67a89e37556adb6635f8`
+        `${process.env.REACT_APP_BACKEND_URL}cart/6933ec16fa9368ef6b374eda`
       );
 
       if (!res.ok) {
@@ -105,6 +118,7 @@ const EcommerceProvider = ({ children }) => {
       }));
 
       setProductCart(transformCart || []);
+      setIsLoadingCart(false);
     } catch (error) {
       console.error("Failed to fetch cart.", error);
     }
@@ -112,8 +126,9 @@ const EcommerceProvider = ({ children }) => {
 
   const fetchUserWishlist = async () => {
     try {
+      setIsLoadingWishlist(true);
       const res = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}wishlist/691c67a89e37556adb6635f8`
+        `${process.env.REACT_APP_BACKEND_URL}wishlist/6933ec16fa9368ef6b374eda`
       );
 
       if (!res.ok) {
@@ -126,6 +141,7 @@ const EcommerceProvider = ({ children }) => {
         ...product.productId,
       }));
 
+      setIsLoadingWishlist(false);
       setWishList(transformData || []);
     } catch (error) {
       console.error("Failed to fetch wishlist.", error);
@@ -144,7 +160,7 @@ const EcommerceProvider = ({ children }) => {
         body: JSON.stringify({
           productId: product._id,
           quantity,
-          userId: "691c67a89e37556adb6635f8",
+          userId: "6933ec16fa9368ef6b374eda",
         }),
       });
 
@@ -178,7 +194,7 @@ const EcommerceProvider = ({ children }) => {
     const toastId = toast.loading("Increase quantity...");
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}cart/691c67a89e37556adb6635f8`,
+        `${process.env.REACT_APP_BACKEND_URL}cart/6933ec16fa9368ef6b374eda`,
         {
           method: "PATCH",
           headers: {
@@ -213,7 +229,7 @@ const EcommerceProvider = ({ children }) => {
     const toastId = toast.loading("Decrease quantity...");
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}cart/decrease/691c67a89e37556adb6635f8`,
+        `${process.env.REACT_APP_BACKEND_URL}cart/decrease/6933ec16fa9368ef6b374eda`,
         {
           method: "PATCH",
           headers: {
@@ -255,7 +271,7 @@ const EcommerceProvider = ({ children }) => {
 
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}cart/remove/691c67a89e37556adb6635f8`,
+        `${process.env.REACT_APP_BACKEND_URL}cart/remove/6933ec16fa9368ef6b374eda`,
         {
           method: "PATCH",
           headers: {
@@ -295,7 +311,7 @@ const EcommerceProvider = ({ children }) => {
           },
           body: JSON.stringify({
             productId: product._id,
-            userId: "691c67a89e37556adb6635f8",
+            userId: "6933ec16fa9368ef6b374eda",
           }),
         }
       );
@@ -326,12 +342,53 @@ const EcommerceProvider = ({ children }) => {
     });
   };
 
+  const handleRemoveToWishList = async (product) => {
+    const tostId = toast.loading("Remove to wishlist...");
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}wishlist`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            productId: product._id,
+            userId: "6933ec16fa9368ef6b374eda",
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to add product to wishlist.");
+      }
+
+      const data = await response.json();
+    } catch (error) {
+      throw new Error("Error occurred while remove product to wishlist.");
+    }
+
+    setWishList((prevStat) => {
+      const exist = prevStat.find(
+        (wishProduct) => wishProduct._id === product._id
+      );
+      if (exist) {
+        toast.success("Product removed from wishlist.", { id: tostId });
+        return prevStat.filter(
+          (wishProduct) => wishProduct._id !== product._id
+        );
+      } else {
+        return [...prevStat, { ...product }];
+      }
+    });
+  };
+
   const handleWishListToCart = async (product) => {
     const tostId = toast.loading("Adding to cart...");
 
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}wishlist/691c67a89e37556adb6635f8`,
+        `${process.env.REACT_APP_BACKEND_URL}wishlist/6933ec16fa9368ef6b374eda`,
         {
           method: "PATCH",
           headers: {
@@ -376,9 +433,11 @@ const EcommerceProvider = ({ children }) => {
   const handleCartToWishList = async (product) => {
     const tostId = toast.loading("Adding to wishlist...");
 
+    
+
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}cart/moveto_wishlist/691c67a89e37556adb6635f8`,
+        `${process.env.REACT_APP_BACKEND_URL}cart/moveto_wishlist/6933ec16fa9368ef6b374eda`,
         {
           method: "PATCH",
           headers: {
@@ -477,7 +536,7 @@ const EcommerceProvider = ({ children }) => {
   const handleClearCart = async () => {
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}cart/clear_cart/691c67a89e37556adb6635f8`,
+        `${process.env.REACT_APP_BACKEND_URL}cart/clear_cart/6933ec16fa9368ef6b374eda`,
         {
           method: "PATCH",
           headers: {
@@ -498,8 +557,6 @@ const EcommerceProvider = ({ children }) => {
 
   const handleCancelOrder = async (id) => {
     const toastId = toast.loading("Order cancel...");
-
-    console.log(id);
 
     try {
       const response = await fetch(
@@ -553,9 +610,15 @@ const EcommerceProvider = ({ children }) => {
   return (
     <EcommerceContext.Provider
       value={{
+        isLoadingAddress,
+        isLoadingOrders,
+        isLoadingWishlist,
+        isLoadingCart,
+        isLoading,
         productsList,
         handleAddProducts,
         searchText,
+        fetchUserCarts,
         setSearchText,
         handleAddToCart,
         productCart,
@@ -569,6 +632,7 @@ const EcommerceProvider = ({ children }) => {
         handleRemoveFromCart,
         handleAddToWishList,
         handleAddToWishList,
+        handleRemoveToWishList,
         handleWishListToCart,
         handleCartToWishList,
         handleAddToWishList,

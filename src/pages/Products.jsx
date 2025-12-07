@@ -1,37 +1,52 @@
 import { useEcommerce } from "../context/EcommerceContext";
 import { useState, useEffect } from "react";
 import CategoryFilter from "../components/CategoryFilter";
-import SubCategoryFilter from "../components/SubCategoryFilter";
 import ProductCard from "../components/ProductCard";
 import { useSearchParams } from "react-router-dom";
+import toast from "react-hot-toast";
+import Loading from "../components/Loading";
 
 const Products = () => {
   const [changePrice, setChangePrice] = useState(5000);
   const [category, setCategory] = useState([]);
-  const [subCategory, setSubCategory] = useState("All");
+  const [productRating, setProductRating] = useState(0);
+
+  const ratingArr = [
+    { name: "4 Stars & Above", value: 4, id: "4star", radioName: "rating" },
+    { name: "3 Stars & Above", value: 3, id: "3star", radioName: "rating" },
+    { name: "2 Stars & Above", value: 2, id: "2star", radioName: "rating" },
+    { name: "1 Stars & Above", value: 1, id: "1star", radioName: "rating" },
+  ];
+
   const [sortBy, setSortBy] = useState("");
   const {
+    isLoading,
     productsList,
-    productCart,
-    searchText,
-    wishlist,
-    handleAddToCart,
-    handleAddToWishList,
+
     fetchAllProducts,
   } = useEcommerce();
 
-  const [searchParams] = useSearchParams();
-  const productCategory = searchParams.get("category");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const productCategory = searchParams.get("category") || "";
+  const searchProductText = searchParams.get("search") || "";
 
   const searchedProduct =
-    searchText === ""
+    searchProductText === ""
       ? productsList
       : productsList.filter(
           (product) =>
-            product.name.toLowerCase().includes(searchText.toLowerCase()) ||
-            product.category.toLowerCase().includes(searchText.toLowerCase()) ||
-            product.keywords.toLowerCase().includes(searchText.toLowerCase()) ||
-            product.tags.includes(searchText.toLowerCase())
+            product.name
+              .toLowerCase()
+              .includes(searchProductText.toLowerCase()) ||
+            product.category
+              .toLowerCase()
+              .includes(searchProductText.toLowerCase()) ||
+            product.keywords
+              .toLowerCase()
+              .includes(searchProductText.toLowerCase()) ||
+            product.tags.some((tag) =>
+              tag.toLowerCase().includes(searchProductText.toLowerCase())
+            )
         );
 
   const priceFilter = searchedProduct.filter(
@@ -41,12 +56,12 @@ const Products = () => {
   const categoryFilter =
     category.length === 0
       ? priceFilter
-      : priceFilter.filter((product) => product.category.includes(category));
+      : priceFilter.filter((product) => category.includes(product.category));
 
-  const subCategoryFilter =
-    subCategory === "All"
+  const ratingFilter =
+    productRating === 0
       ? categoryFilter
-      : categoryFilter.filter((product) => product.tags.includes(subCategory));
+      : categoryFilter.filter((product) => product.rating >= productRating);
 
   const handleOnChangeCategory = (e) => {
     const { checked, value } = e.target;
@@ -59,29 +74,28 @@ const Products = () => {
       );
     }
   };
-  const handleOnChangeSubCategory = (e) => {
-    const { value } = e.target;
-
-    setSubCategory(value);
-  };
-
-  const finalProduct = [...subCategoryFilter];
 
   if (sortBy === "HighToLow") {
-    finalProduct.sort(
+    ratingFilter.sort(
       (a, b) => Number(b.discountPrice) - Number(a.discountPrice)
     );
   } else if (sortBy === "LowToHigh") {
-    finalProduct.sort(
+    ratingFilter.sort(
       (a, b) => Number(a.discountPrice) - Number(b.discountPrice)
     );
   }
 
   const handleClearFilter = () => {
+    const toastId = toast.loading("removing filters...");
     setChangePrice(5000);
     setCategory([]);
-    setSubCategory("All");
+
+    searchParams.delete("category");
+    searchParams.delete("search");
+    setSearchParams(searchParams);
     setSortBy("");
+    setProductRating(0);
+    toast.success("All filters removed", { id: toastId });
   };
 
   useEffect(() => {
@@ -89,15 +103,14 @@ const Products = () => {
   }, [productCategory]);
   return (
     <main className="">
-      <div className="row">
-      
-        <div class="text-end d-lg-none">
+      <div className="row position-relative ">
+        <div class="text-end  position-absolute d-block d-md-none">
           <button
             class="btn p-2 bg-transparent border-0"
             data-bs-toggle="offcanvas"
             data-bs-target="#offcanvasResponsive"
           >
-            <i class="bi bi-funnel fs-4"></i>
+            Filters <i class="bi bi-funnel fs-4"></i>
           </button>
         </div>
 
@@ -107,7 +120,6 @@ const Products = () => {
           id="offcanvasResponsive"
         >
           <div class="offcanvas-header">
-         
             <button
               type="button"
               class="btn-close"
@@ -154,11 +166,26 @@ const Products = () => {
                 />
               </div>
 
-              <div className="border-bottom">
-                <SubCategoryFilter
-                  onChangeSubCategory={handleOnChangeSubCategory}
-                  subCategory={subCategory}
-                />
+              <div className="py-3">
+                <label htmlFor="rating">
+                  <strong>Rating</strong>
+                </label>
+                {ratingArr.map((rating) => (
+                  <div className="form-check">
+                    <input
+                      type="radio"
+                      id={rating.id}
+                      name={rating.radioName}
+                      value={rating.value}
+                      checked={rating.value === Number(productRating)}
+                      onChange={(e) => setProductRating(e.target.value)}
+                      className="form-check-input"
+                    />
+                    <label className="form-check-label" htmlFor={rating.id}>
+                      {rating.name}
+                    </label>
+                  </div>
+                ))}
               </div>
 
               <div className="py-3">
@@ -204,7 +231,6 @@ const Products = () => {
           </div>
         </div>
 
-      
         <div className="col-md-3 d-none d-md-block border-end bg-white">
           <section className="p-3 sticky-top" style={{ top: "20px" }}>
             <div className="d-flex align-items-center justify-content-between mb-4">
@@ -250,11 +276,26 @@ const Products = () => {
               />
             </div>
 
-            <div className="border-bottom">
-              <SubCategoryFilter
-                onChangeSubCategory={handleOnChangeSubCategory}
-                subCategory={subCategory}
-              />
+            <div className="py-3">
+              <label htmlFor="rating">
+                <strong>Rating</strong>
+              </label>
+              {ratingArr.map((rating) => (
+                <div className="form-check">
+                  <input
+                    type="radio"
+                    id={rating.id}
+                    name={rating.radioName}
+                    value={rating.value}
+                    checked={rating.value === Number(productRating)}
+                    onChange={(e) => setProductRating(e.target.value)}
+                    className="form-check-input"
+                  />
+                  <label className="form-check-label" htmlFor={rating.id}>
+                    {rating.name}
+                  </label>
+                </div>
+              ))}
             </div>
 
             <div className="py-3">
@@ -293,34 +334,36 @@ const Products = () => {
           </section>
         </div>
 
-      
         <div className="col-md-9 bg-light min-vh-100 p-3 pb-5 mb-5 mb-md-0">
-          <section>
-            <div className="row">
-              {finalProduct && (
-                <div className="mb-4">
-                  <h5 className="fw-bold mb-2" style={{ fontSize: "1.5rem" }}>
-                    All Products
-                  </h5>
-                  <span className="text-muted">
-                    Showing {finalProduct.length} products
-                  </span>
-                </div>
-              )}
-              {finalProduct &&
-                finalProduct.length !== 0 &&
-                finalProduct.map((product) => (
-                  <ProductCard
-                    key={product._id}
-                    product={product}
-                    productCart={productCart}
-                    wishlist={wishlist}
-                    handleAddToWishList={handleAddToWishList}
-                    handleAddToCart={handleAddToCart}
-                  />
-                ))}
-            </div>
-          </section>
+          {isLoading ? (
+            <Loading />
+          ) : (
+            <section>
+              <div className="row">
+                {ratingFilter && (
+                  <div className="mb-4">
+                    <h5 className="fw-bold mb-2" style={{ fontSize: "1.5rem" }}>
+                      All Products
+                    </h5>
+                    <span className="text-muted">
+                      Showing {ratingFilter.length} products
+                    </span>
+                  </div>
+                )}
+
+                {ratingFilter &&
+                  ratingFilter.length !== 0 &&
+                  ratingFilter.map((product) => (
+                    <div
+                      key={product._id}
+                      className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4"
+                    >
+                      <ProductCard product={product} />
+                    </div>
+                  ))}
+              </div>
+            </section>
+          )}
         </div>
       </div>
     </main>

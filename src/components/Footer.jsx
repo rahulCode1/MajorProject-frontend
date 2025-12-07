@@ -1,9 +1,50 @@
-import {NavLink} from "react-router-dom"
+import { FiSearch, FiShoppingCart, FiUser, FiHome } from "react-icons/fi";
+import { NavLink } from "react-router-dom";
+import { useEcommerce } from "../context/EcommerceContext";
+
 const Footer = () => {
+  const { productCart } = useEcommerce();
+
+  const totalItemsInCart =
+    productCart && productCart.length > 0
+      ? productCart.reduce((acc, curr) => acc + curr.quantity, 0)
+      : 0;
+
   return (
-    <footer className="">
+    <footer className="position-fixed bottom-0 start-0 bg-light w-100">
       <div className="container">
-        <p>&copy; 2025. All Rights Reserved.</p>
+        <ul className="navbar-nav d-flex flex-row justify-content-evenly">
+          <li className="nav-item">
+            <NavLink to="/" className="nav-link">
+              <FiHome size={22} />
+            </NavLink>
+          </li>
+
+          <li className="nav-item">
+            <NavLink to="/products" className="nav-link">
+              <FiSearch size={22} />
+            </NavLink>
+          </li>
+          <li className="nav-item">
+            <NavLink to="/cart" className="nav-link position-relative">
+              <FiShoppingCart size={22} />
+              {totalItemsInCart > 0 && (
+                <span
+                  className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary"
+                  style={{ fontSize: "0.65rem", padding: "0.25em 0.5em" }}
+                >
+                  {totalItemsInCart}
+                </span>
+              )}
+            </NavLink>
+          </li>
+
+          <li className="nav-item">
+            <NavLink to="/user" className="nav-link">
+              <FiUser size={22} />
+            </NavLink>
+          </li>
+        </ul>
       </div>
     </footer>
   );

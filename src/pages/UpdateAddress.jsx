@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { indianStates } from "../data/products";
 import { useEcommerce } from "../context/EcommerceContext";
 import { useLoaderData, useNavigate, useParams } from "react-router-dom";
-import { RotatingLines } from "react-loader-spinner";
+import Loading from "../components/Loading";
 
 const UpdateAddress = () => {
   const [formData, setFormData] = useState({});
@@ -43,7 +43,7 @@ const UpdateAddress = () => {
 
       setTimeout(() => {
         setIsLoading(false);
-        navigate("/userAddress");
+        navigate("/user");
 
         handleUpdateAddress(formData);
       }, 1000);
@@ -59,7 +59,7 @@ const UpdateAddress = () => {
       <h1>Update Address </h1>
       {isLoading && (
         <div className="overlay m-auto">
-          <RotatingLines strokeColor="#0f0e0eff" />
+          <Loading />
         </div>
       )}
       <form onSubmit={submitToUpdate}>

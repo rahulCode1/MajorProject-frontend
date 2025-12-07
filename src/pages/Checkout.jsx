@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEcommerce } from "../context/EcommerceContext";
 import { toast } from "react-hot-toast";
-import { RotatingLines } from "react-loader-spinner";
+import Loading from "../components/Loading";
 
 import { useState } from "react";
 
@@ -33,6 +33,14 @@ const Checkout = () => {
     address.find((address) => address.isDefault === true);
 
   const handleSubmitOrder = async () => {
+    if (address.length === 0) {
+      return alert("Please add address.");
+    }
+
+    if (address.length !== 0 && !selectedAddress) {
+      return alert("Please select an address.");
+    }
+
     const toastId = toast.loading("Place order...");
     const order = {
       products: [...productCart],
@@ -43,12 +51,13 @@ const Checkout = () => {
         totalQuantity,
       },
       paymentMethod: payment,
+      paymentStatus: payment === "online" ? "completed" : "pending",
     };
 
     setIsLoading(true);
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}order/691c67a89e37556adb6635f8`,
+        `${process.env.REACT_APP_BACKEND_URL}order/6933ec16fa9368ef6b374eda`,
         {
           method: "POST",
           headers: {
@@ -83,7 +92,7 @@ const Checkout = () => {
     <main className="container py-4">
       {isLoading && (
         <div className="overlay">
-          <RotatingLines strokeColor="#000000ff" />
+          <Loading />
         </div>
       )}
 
@@ -141,7 +150,11 @@ const Checkout = () => {
           ) : (
             <div className="alert alert-warning">
               <p className="mb-2">No Address Found.</p>
-              <Link to="/addAddress" className="btn btn-primary btn-sm">
+              <Link
+                to="/addAddress"
+                state={{ from: "/checkout" }}
+                className="btn btn-primary btn-sm"
+              >
                 Add New Address
               </Link>
             </div>
@@ -149,7 +162,11 @@ const Checkout = () => {
 
           {productCart && productCart.length > 0 && (
             <div className="text-center mt-3">
-              <Link to="/addAddress" className="btn btn-outline-dark btn-sm">
+              <Link
+                to="/addAddress"
+                state={{ from: "/checkout" }}
+                className="btn btn-outline-dark btn-sm"
+              >
                 + Add New Address
               </Link>
             </div>

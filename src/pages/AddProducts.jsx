@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Form, useNavigate } from "react-router-dom";
 import { useEcommerce } from "../context/EcommerceContext";
 import { toast } from "react-hot-toast";
-import { RotatingLines } from "react-loader-spinner";
+import Loading from "../components/Loading";
 const AddProducts = () => {
   const initialFormData = {
     name: "",
@@ -10,6 +10,7 @@ const AddProducts = () => {
     description: "",
     price: "",
     discountPrice: "",
+    rating: "",
     costPrice: "",
     length: "",
     width: "",
@@ -31,6 +32,9 @@ const AddProducts = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { handleAddProducts } = useEcommerce();
   const navigate = useNavigate();
+
+
+  console.log(formData)
 
   const handleOnChange = (e) => {
     setFormData((prevStat) => ({ ...prevStat, [e.target.id]: e.target.value }));
@@ -146,7 +150,7 @@ const AddProducts = () => {
 
       {isLoading && (
         <div className="overlay">
-          <RotatingLines strokeColor="#000000ff" />
+          <Loading />
         </div>
       )}
 
@@ -310,20 +314,44 @@ const AddProducts = () => {
           </div>
         </div>
 
-        <div className="">
-          <label htmlFor="weight" className="form-label">
-            Weight
-          </label>
-          <input
-            type="number"
-            id="weight"
-            name="weight"
-            value={formData.weight}
-            required
-            onChange={handleOnChange}
-            placeholder="Enter product weight in kg"
-            className="form-control"
-          />
+        <div className="row">
+          <div className="col">
+            <label htmlFor="weight" className="form-label">
+              Weight
+            </label>
+            <input
+              type="number"
+              id="weight"
+              name="weight"
+              value={formData.weight}
+              required
+              onChange={handleOnChange}
+              placeholder="Enter product weight in kg"
+              className="form-control"
+            />
+          </div>
+          <div className="col">
+            <label htmlFor="rating" className="form-label">
+              Rating
+            </label>
+            <select id="rating" required onChange={handleOnChange} className="form-select">
+              <option value={5} selected>
+                5
+              </option>
+              <option value={5} selected>
+                4
+              </option>
+              <option value={5} selected>
+                3
+              </option>
+              <option value={5} selected>
+                2
+              </option>
+              <option value={5} selected>
+                1
+              </option>
+            </select>
+          </div>
         </div>
 
         <div className="row">
@@ -483,7 +511,7 @@ const AddProducts = () => {
         <br />
         <br />
         <button disabled={isLoading} type="submit" className="btn btn-primary">
-          Add Product
+          {isLoading ? "Adding..." : " Add Product"}
         </button>
       </Form>
     </main>

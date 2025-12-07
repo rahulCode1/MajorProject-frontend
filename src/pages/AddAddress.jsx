@@ -2,8 +2,8 @@ import { toast } from "react-hot-toast";
 import { useState } from "react";
 import { indianStates } from "../data/products";
 import { useEcommerce } from "../context/EcommerceContext";
-import { useNavigate } from "react-router-dom";
-import { RotatingLines } from "react-loader-spinner";
+import { useLocation, useNavigate } from "react-router-dom";
+import Loading from "../components/Loading";
 
 const AddAddress = () => {
   const initialValue = {
@@ -18,6 +18,10 @@ const AddAddress = () => {
   const [formData, setFormData] = useState(initialValue);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+const redirectTo = location.state?.from || "user"
+  console.log(redirectTo);
+
   const { handleAddAddress, fetchUserAddress } = useEcommerce();
 
   const handleOnChange = (e) => {
@@ -51,7 +55,7 @@ const AddAddress = () => {
       setFormData(initialValue);
       setTimeout(() => {
         setIsLoading(false);
-        navigate("/userAddress");
+        navigate(redirectTo);
       }, 1000);
 
       toast.success("Address added successfully.", { id: tostId });
@@ -65,7 +69,7 @@ const AddAddress = () => {
       <h1>Address </h1>
       {isLoading && (
         <div className="overlay">
-          <RotatingLines strokeColor="#000000ff" />
+          <Loading />
         </div>
       )}
       <form onSubmit={submitAddress}>

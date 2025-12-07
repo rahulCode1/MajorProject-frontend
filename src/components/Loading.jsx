@@ -1,14 +1,13 @@
-import { Oval } from "react-loader-spinner";
+import ClipLoader from "react-spinners/ClipLoader";
 
 const Loading = () => {
   return (
-    <Oval
-      height={50}
-      width={50}
-      color="#007bff" // You can change color
-      secondaryColor="#ccc"
-      strokeWidth={4}
-    />
+    <div
+      className="d-flex justify-content-center align-items-center"
+      style={{ minHeight: "300px" }}
+    >
+      <ClipLoader size={50} color="#4f46e5" speedMultiplier={1.3} />
+    </div>
   );
 };
 

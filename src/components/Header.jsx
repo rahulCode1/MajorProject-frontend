@@ -1,167 +1,133 @@
-import {  NavLink } from "react-router-dom";
+import { FiSearch, FiHeart, FiShoppingCart, FiUser, FiX } from "react-icons/fi";
+import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
 import { useEcommerce } from "../context/EcommerceContext";
 
 const Header = () => {
-  const { setSearchText, productCart, wishlist } = useEcommerce();
-
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { setSearchText, productCart, wishlist, searchText } = useEcommerce();
+  const navigate = useNavigate();
   const totalItemsInCart =
     productCart && productCart.length > 0
       ? productCart.reduce((acc, curr) => acc + curr.quantity, 0)
       : 0;
 
+  const updateQuaryParam = (key, value) => {
+    const params = new URLSearchParams(searchParams);
+
+    if (!value) {
+      params.delete(key);
+    } else {
+      params.set(key, value);
+    }
+    setSearchParams(params);
+    navigate(`/products?${params}`);
+  };
+
+  const clearSearch = () => {
+    setSearchText("");
+    updateQuaryParam("search", "");
+  };
+
   return (
-    <nav className="navbar navbar-expand-lg bg-body-tertiary py-3">
-      <div className="container-fluid container">
-        <NavLink className="navbar-brand" to="/">
-          Navbar
-        </NavLink>
+    <>
+      <nav className=" bg-body-tertiary py-3 shadow-sm">
+        <div className="container d-flex align-items-center justify-content-between">
+          {/* LEFT: LOGO */}
+          <NavLink className="navbar-brand fw-bold fs-4" to="/">
+            LUXLINA
+          </NavLink>
 
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
+          <div className="mx-3 flex-grow-1" style={{ maxWidth: "450px" }}>
+            <div className="input-group rounded-pill border overflow-hidden bg-white shadow-sm">
+              <input
+                type="text"
+                className="form-control border-0 shadow-none ps-4"
+                placeholder="Search products..."
+                style={{
+                  backgroundColor: "transparent",
+                  fontSize: "0.95rem",
+                }}
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === "Enter" && searchText.length > 0) {
+                    updateQuaryParam("search", searchText);
+                  }
+                }}
+              />
 
-        <div className="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-           
+              {/* Clear button - only show when there's text */}
+              {searchText.length > 0 && (
+                <button
+                  onClick={clearSearch}
+                  className="btn border-0 p-0"
+                  style={{
+                    backgroundColor: "transparent",
+                  }}
+                  title="Clear search"
+                >
+                  <FiX className="text-muted" size={20} />
+                </button>
+              )}
 
-            
-            <li className="nav-item">
-              <NavLink
-                to="/products"
-                className={({ isActive }) =>
-                  isActive
-                    ? "nav-link px-3 py-2 rounded bg-dark text-white fw-semibold shadow-sm"
-                    : "nav-link px-3 py-2 text-dark fw-semibold"
-                }
+              {/* Search button */}
+              <button
+                onClick={() => updateQuaryParam("search", searchText)}
+                className="btn border-0 pe-3"
+                disabled={searchText.length === 0}
+                style={{
+                  backgroundColor: "transparent",
+                }}
               >
-                Products
+                <FiSearch
+                  className={
+                    searchText.length === 0 ? "text-muted" : "text-primary"
+                  }
+                  size={20}
+                />
+              </button>
+            </div>
+          </div>
+
+          {/* RIGHT: ICON NAV LINKS */}
+          <ul className="navbar-nav d-flex flex-row gap-3 align-items-center">
+            <li className="nav-item position-relative">
+              <NavLink to="/wishlist" className="nav-link position-relative">
+                <FiHeart size={22} />
+                {wishlist.length > 0 && (
+                  <span
+                    className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                    style={{ fontSize: "0.65rem", padding: "0.25em 0.5em" }}
+                  >
+                    {wishlist.length}
+                  </span>
+                )}
               </NavLink>
             </li>
 
-         
             <li className="nav-item">
-              <NavLink
-                to="/add"
-                className={({ isActive }) =>
-                  isActive
-                    ? "nav-link px-3 py-2 rounded bg-dark text-white fw-semibold shadow-sm"
-                    : "nav-link px-3 py-2 text-dark fw-semibold"
-                }
-              >
-                Add Product
+              <NavLink to="/cart" className="nav-link position-relative">
+                <FiShoppingCart size={22} />
+                {totalItemsInCart > 0 && (
+                  <span
+                    className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary"
+                    style={{ fontSize: "0.65rem", padding: "0.25em 0.5em" }}
+                  >
+                    {totalItemsInCart}
+                  </span>
+                )}
               </NavLink>
             </li>
 
             <li className="nav-item">
-              <NavLink
-                to="/cart"
-                className={({ isActive }) =>
-                  isActive
-                    ? "nav-link px-3 py-2 rounded bg-dark text-white fw-semibold shadow-sm"
-                    : "nav-link px-3 py-2 text-dark fw-semibold"
-                }
-              >
-                Cart ({totalItemsInCart})
-              </NavLink>
-            </li>
-
-          
-            <li className="nav-item">
-              <NavLink
-                to="/wishlist"
-                className={({ isActive }) =>
-                  isActive
-                    ? "nav-link px-3 py-2 rounded bg-dark text-white fw-semibold shadow-sm"
-                    : "nav-link px-3 py-2 text-dark fw-semibold"
-                }
-              >
-                Wishlist ({wishlist.length})
-              </NavLink>
-            </li>
-
-         
-            <li className="nav-item">
-              <NavLink
-                to="/addAddress"
-                className={({ isActive }) =>
-                  isActive
-                    ? "nav-link px-3 py-2 rounded bg-dark text-white fw-semibold shadow-sm"
-                    : "nav-link px-3 py-2 text-dark fw-semibold"
-                }
-              >
-                Add Address
-              </NavLink>
-            </li>
-
-       
-            <li className="nav-item">
-              <NavLink
-                to="/userAddress"
-                className={({ isActive }) =>
-                  isActive
-                    ? "nav-link px-3 py-2 rounded bg-dark text-white fw-semibold shadow-sm"
-                    : "nav-link px-3 py-2 text-dark fw-semibold"
-                }
-              >
-                User Address
-              </NavLink>
-            </li>
-
-           
-
-          
-            <li className="nav-item">
-              <NavLink
-                to="/orders"
-                className={({ isActive }) =>
-                  isActive
-                    ? "nav-link px-3 py-2 rounded bg-dark text-white fw-semibold shadow-sm"
-                    : "nav-link px-3 py-2 text-dark fw-semibold"
-                }
-              >
-                Orders
-              </NavLink>
-            </li>
-
-       
-            <li className="nav-item">
-              <NavLink
-                to="/user"
-                className={({ isActive }) =>
-                  isActive
-                    ? "nav-link px-3 py-2 rounded bg-dark text-white fw-semibold shadow-sm"
-                    : "nav-link px-3 py-2 text-dark fw-semibold"
-                }
-              >
-                Profile
+              <NavLink to="/user" className="nav-link">
+                <FiUser size={22} />
               </NavLink>
             </li>
           </ul>
-
-         
-          <form className="d-flex" role="search">
-            <input
-              className="form-control me-2"
-              type="search"
-              placeholder="Search"
-              aria-label="Search"
-              onChange={(e) => setSearchText(e.target.value)}
-            />
-            <button className="btn btn-outline-success" type="submit">
-              Search
-            </button>
-          </form>
         </div>
-      </div>
-    </nav>
+      </nav>
+    </>
   );
 };
 
