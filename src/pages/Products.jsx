@@ -19,16 +19,23 @@ const Products = () => {
   ];
 
   const [sortBy, setSortBy] = useState("");
-  const {
-    isLoading,
-    productsList,
-
-    fetchAllProducts,
-  } = useEcommerce();
+  const { isLoading, productsList, fetchAllProducts } = useEcommerce();
 
   const [searchParams, setSearchParams] = useSearchParams();
   const productCategory = searchParams.get("category") || "";
   const searchProductText = searchParams.get("search") || "";
+
+  // Sync URL category with checkbox state when component mounts or URL changes
+  useEffect(() => {
+    if (productCategory && !category.includes(productCategory)) {
+      setCategory([productCategory]);
+    }
+  }, [productCategory]);
+
+  // Fetch ALL products without backend filtering
+  useEffect(() => {
+    fetchAllProducts("");
+  }, []);
 
   const searchedProduct =
     searchProductText === ""
@@ -75,12 +82,14 @@ const Products = () => {
     }
   };
 
+  const sortedArray = [...ratingFilter];
+
   if (sortBy === "HighToLow") {
-    ratingFilter.sort(
+    sortedArray.sort(
       (a, b) => Number(b.discountPrice) - Number(a.discountPrice)
     );
   } else if (sortBy === "LowToHigh") {
-    ratingFilter.sort(
+    sortedArray.sort(
       (a, b) => Number(a.discountPrice) - Number(b.discountPrice)
     );
   }
@@ -98,36 +107,33 @@ const Products = () => {
     toast.success("All filters removed", { id: toastId });
   };
 
-  useEffect(() => {
-    fetchAllProducts(productCategory);
-  }, [productCategory]);
   return (
-    <main className="">
+    <main className="px-2">
       <div className="row position-relative ">
-        <div class="text-end  position-absolute d-block d-md-none">
+        <div className="text-end  position-absolute d-block d-md-none">
           <button
-            class="btn p-2 bg-transparent border-0"
+            className="btn p-2 bg-transparent border-0"
             data-bs-toggle="offcanvas"
             data-bs-target="#offcanvasResponsive"
           >
-            Filters <i class="bi bi-funnel fs-4"></i>
+            Filters <i className="bi bi-funnel fs-4"></i>
           </button>
         </div>
 
         <div
-          class="offcanvas offcanvas-end"
-          tabindex="-1"
+          className="offcanvas offcanvas-end"
+          tabIndex="-1"
           id="offcanvasResponsive"
         >
-          <div class="offcanvas-header">
+          <div className="offcanvas-header">
             <button
               type="button"
-              class="btn-close"
+              className="btn-close"
               data-bs-dismiss="offcanvas"
             ></button>
           </div>
 
-          <div class="offcanvas-body">
+          <div className="offcanvas-body">
             <div className="p-3">
               <div className="d-flex align-items-center justify-content-between mb-3">
                 <strong>Filters</strong>
@@ -171,14 +177,14 @@ const Products = () => {
                   <strong>Rating</strong>
                 </label>
                 {ratingArr.map((rating) => (
-                  <div className="form-check">
+                  <div className="form-check" key={rating.id}>
                     <input
                       type="radio"
                       id={rating.id}
                       name={rating.radioName}
                       value={rating.value}
-                      checked={rating.value === Number(productRating)}
-                      onChange={(e) => setProductRating(e.target.value)}
+                      checked={Math.floor(rating.value) === productRating}
+                      onChange={(e) => setProductRating(Number(e.target.value))}
                       className="form-check-input"
                     />
                     <label className="form-check-label" htmlFor={rating.id}>
@@ -281,7 +287,7 @@ const Products = () => {
                 <strong>Rating</strong>
               </label>
               {ratingArr.map((rating) => (
-                <div className="form-check">
+                <div className="form-check" key={rating.id}>
                   <input
                     type="radio"
                     id={rating.id}
@@ -340,20 +346,20 @@ const Products = () => {
           ) : (
             <section>
               <div className="row">
-                {ratingFilter && (
+                {sortedArray && (
                   <div className="mb-4">
                     <h5 className="fw-bold mb-2" style={{ fontSize: "1.5rem" }}>
                       All Products
                     </h5>
                     <span className="text-muted">
-                      Showing {ratingFilter.length} products
+                      Showing {sortedArray.length} products
                     </span>
                   </div>
                 )}
 
-                {ratingFilter &&
-                  ratingFilter.length !== 0 &&
-                  ratingFilter.map((product) => (
+                {sortedArray &&
+                  sortedArray.length !== 0 &&
+                  sortedArray.map((product) => (
                     <div
                       key={product._id}
                       className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4"

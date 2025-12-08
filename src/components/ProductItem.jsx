@@ -1,4 +1,5 @@
 import { Link, useParams } from "react-router-dom";
+
 import { useEcommerce } from "../context/EcommerceContext";
 
 import COD from "../imgs/COD.png";
@@ -192,25 +193,35 @@ const ProductItem = ({ productData }) => {
           <h1>Similar Products </h1>
 
           {/* MOBILE: Horizontal scroll */}
+
           <div className="d-flex d-lg-none overflow-auto gap-3 pb-3">
-            {similarProducts.map((product) => (
-              <div
-                key={product._id}
-                className="flex-shrink-0"
-                style={{ width: "220px" }}
-              >
-                <ProductCard product={product} />
-              </div>
-            ))}
+            {similarProducts && similarProducts.length !== 0 ? (
+              similarProducts.map((product) => (
+                <div
+                  key={product._id}
+                  className="flex-shrink-0"
+                  style={{ width: "220px" }}
+                >
+                  <ProductCard product={product} />
+                </div>
+              ))
+            ) : (
+              <h3>No similar products found.</h3>
+            )}
           </div>
 
           {/* DESKTOP: Normal grid */}
+
           <div className="row d-none d-lg-flex">
-            {similarProducts.map((product) => (
-              <div key={product._id} className="col-md-3 mb-4">
-                <ProductCard product={product} />
-              </div>
-            ))}
+            {similarProducts && similarProducts.length !== 0 ? (
+              similarProducts.map((product) => (
+                <div key={product._id} className="col-md-3 mb-4">
+                  <ProductCard product={product} />
+                </div>
+              ))
+            ) : (
+              <h3>No similar products found.</h3>
+            )}
           </div>
         </section>
       </main>
