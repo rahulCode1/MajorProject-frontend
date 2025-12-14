@@ -14,8 +14,10 @@ const UpdateAddress = () => {
   const data = useLoaderData();
   const addressInfo = data.data.address;
 
+
+
   useEffect(() => {
-    setFormData({ ...addressInfo, id: addressInfo._id });
+    setFormData({ ...addressInfo, id: addressInfo.id });
   }, [addressInfo]);
 
   const handleOnChange = (e) => {
@@ -29,7 +31,7 @@ const UpdateAddress = () => {
       const response = await fetch(
         `${process.env.REACT_APP_BACKEND_URL}address/update/${addressId}`,
         {
-          method: "POST",
+          method: "PATCH",
           headers: {
             "Content-Type": "application/json",
           },
@@ -37,21 +39,22 @@ const UpdateAddress = () => {
         }
       );
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error("Failed to update address, Please try again later.");
+        throw new Error(
+          data.message || "Failed to update address, Please try again later."
+        );
       }
 
-      setTimeout(() => {
-        setIsLoading(false);
-        navigate("/user");
+      navigate("/user");
 
-        handleUpdateAddress(formData);
-      }, 1000);
-
-      const data = await response.json();
+      handleUpdateAddress(formData);
     } catch (error) {
-      throw new Error("Failed to update address, Please try again later.");
+      throw new Error(error);
     }
+
+    setIsLoading(false);
   };
 
   return (
@@ -92,6 +95,8 @@ const UpdateAddress = () => {
                 onChange={handleOnChange}
                 value={formData.phoneNumber}
                 required
+                minLength={10}
+                maxLength={10}
                 className="form-control"
               />
             </div>
@@ -193,7 +198,7 @@ export const loader = async ({ request, params }) => {
   const addressId = params.id;
 
   const response = await fetch(
-    `${process.env.REACT_APP_BACKEND_URL}address/${addressId}`
+    `${process.env.REACT_APP_BACKEND_URL}address/address_info/${addressId}`
   );
 
   if (!response.ok) {

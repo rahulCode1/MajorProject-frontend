@@ -4,6 +4,7 @@ import { indianStates } from "../data/products";
 import { useEcommerce } from "../context/EcommerceContext";
 import { useLocation, useNavigate } from "react-router-dom";
 import Loading from "../components/Loading";
+import ErrorModal from "../components/ErrorModal";
 
 const AddAddress = () => {
   const initialValue = {
@@ -17,10 +18,10 @@ const AddAddress = () => {
   };
   const [formData, setFormData] = useState(initialValue);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
-const redirectTo = location.state?.from || "user"
-  console.log(redirectTo);
+  const redirectTo = location.state?.from || "user";
 
   const { handleAddAddress, fetchUserAddress } = useEcommerce();
 
@@ -32,6 +33,7 @@ const redirectTo = location.state?.from || "user"
     e.preventDefault();
     const tostId = toast.loading("Adding Addresses...");
 
+    setError(null);
     setIsLoading(true);
     try {
       const res = await fetch(
@@ -41,27 +43,32 @@ const redirectTo = location.state?.from || "user"
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(formData),
+          body: JSON.stringify({
+            ...formData,
+            userId: "69384436ebe3d68324ec1040",
+          }),
         }
       );
 
+      const data = await res.json();
+
       if (!res.ok) {
-        throw new Error("Failed to add new address.");
+        throw new Error(data.message || "Failed to add new address.");
       }
 
-      const data = await res.json();
       handleAddAddress(formData);
       await fetchUserAddress();
       setFormData(initialValue);
-      setTimeout(() => {
-        setIsLoading(false);
-        navigate(redirectTo);
-      }, 1000);
+
+      navigate(redirectTo);
 
       toast.success("Address added successfully.", { id: tostId });
     } catch (error) {
+      setError(error.message || "Something went wrong while add new address");
       toast.error("Something went wrong while add new address", { id: tostId });
     }
+
+    setIsLoading(false);
   };
 
   return (
@@ -72,6 +79,7 @@ const redirectTo = location.state?.from || "user"
           <Loading />
         </div>
       )}
+      {error && <ErrorModal message={error} onClose={() => setError("")} />}
       <form onSubmit={submitAddress}>
         <div className="mb-2">
           <label
@@ -102,6 +110,8 @@ const redirectTo = location.state?.from || "user"
                 id="phoneNumber"
                 onChange={handleOnChange}
                 value={formData.phoneNumber}
+                minLength={10}
+                maxLength={10}
                 required
                 placeholder="Enter your 10 digits phone number."
                 className="form-control"

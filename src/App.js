@@ -15,6 +15,7 @@ import UpdateAddress, { loader as addressUpdateLoader } from './pages/UpdateAddr
 import Checkout from './pages/Checkout';
 import AllOrders from './pages/AllOrders';
 import UserProfile from "./pages/UserProfile"
+import NotFound from "./components/NotFound"
 
 function App() {
 
@@ -34,7 +35,8 @@ function App() {
         { path: "/address/:id", element: <UpdateAddress />, loader: addressUpdateLoader },
         { path: "/checkout", element: <Checkout /> },
         { path: "/orders", element: <AllOrders /> },
-        { path: "/user", element: <UserProfile /> }
+        { path: "/user", element: <UserProfile /> },
+        { path: "*", element: <NotFound /> }
       ]
     }
   ])

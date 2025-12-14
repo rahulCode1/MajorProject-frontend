@@ -10,6 +10,7 @@ import {
 const Cart = () => {
   const {
     productCart,
+    wishlist,
     isLoadingCart,
     handleIncreaseQuantity,
     handleDecreaseQuantity,
@@ -17,8 +18,10 @@ const Cart = () => {
     handleCartToWishList,
   } = useEcommerce();
 
+  const isExistOnWishlist = (productId) => {
+    return wishlist.some((wish) => wish.id === productId);
+  };
 
-  
   return (
     <>
       {isLoadingCart ? (
@@ -72,7 +75,7 @@ const Cart = () => {
                           }}
                         >
                           <button
-                            onClick={() => handleDecreaseQuantity(product._id)}
+                            onClick={() => handleDecreaseQuantity(product.id)}
                             className="btn btn-light btn-sm rounded-circle shadow-sm"
                           >
                             −
@@ -81,7 +84,7 @@ const Cart = () => {
                           <span className="fw-bold">{product.quantity}</span>
 
                           <button
-                            onClick={() => handleIncreaseQuantity(product._id)}
+                            onClick={() => handleIncreaseQuantity(product.id)}
                             className="btn btn-light btn-sm rounded-circle shadow-sm"
                           >
                             +
@@ -91,18 +94,23 @@ const Cart = () => {
 
                       <div className="d-flex gap-3">
                         <button
-                          onClick={() => handleRemoveFromCart(product._id)}
+                          onClick={() => handleRemoveFromCart(product.id)}
                           className="btn btn-outline-danger px-3"
                         >
                           Remove
                         </button>
 
-                        <button
-                          onClick={() => handleCartToWishList(product)}
-                          className="btn btn-outline-dark px-3"
-                        >
-                          Move to Wishlist
-                        </button>
+                        {console.log(isExistOnWishlist(product.id))}
+                        {isExistOnWishlist(product.id) ? (
+                          <Link to={"/wishlist"} className="btn btn-primary">Go to Wishlist </Link>
+                        ) : (
+                          <button
+                            onClick={() => handleCartToWishList(product)}
+                            className="btn btn-outline-dark px-3"
+                          >
+                            Move to Wishlist
+                          </button>
+                        )}
                       </div>
                     </div>
                   </div>

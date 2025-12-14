@@ -68,7 +68,7 @@ const CartList = ({
                         }}
                       >
                         <button
-                          onClick={() => handleDecreaseQuantity(product._id)}
+                          onClick={() => handleDecreaseQuantity(product.id)}
                           className="btn btn-light btn-sm rounded-circle shadow-sm"
                         >
                           −
@@ -77,7 +77,7 @@ const CartList = ({
                         <span className="fw-bold">{product.quantity}</span>
 
                         <button
-                          onClick={() => handleIncreaseQuantity(product._id)}
+                          onClick={() => handleIncreaseQuantity(product.id)}
                           className="btn btn-light btn-sm rounded-circle shadow-sm"
                         >
                           +
@@ -87,7 +87,7 @@ const CartList = ({
 
                     <div className="d-flex gap-3">
                       <button
-                        onClick={() => handleRemoveFromCart(product._id)}
+                        onClick={() => handleRemoveFromCart(product.id)}
                         className="btn btn-outline-danger px-3"
                       >
                         Remove

@@ -361,7 +361,7 @@ const Products = () => {
                   sortedArray.length !== 0 &&
                   sortedArray.map((product) => (
                     <div
-                      key={product._id}
+                      key={product.id}
                       className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4"
                     >
                       <ProductCard product={product} />

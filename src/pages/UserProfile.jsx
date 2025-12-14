@@ -7,6 +7,7 @@ export default function UserProfile() {
   const [isLoading, setIsLoading] = useState(false);
   const {
     address,
+  
     handleSelectDefaultAddress,
     isLoadingAddress,
     handleRemoveAddress,
@@ -202,7 +203,7 @@ export default function UserProfile() {
                 {address && address.length > 0 ? (
                   <div className="row row-cols-1 row-cols-xl-2 g-4">
                     {address.map((userAdd) => (
-                      <div className="col" key={userAdd._id}>
+                      <div className="col" key={userAdd.id}>
                         <div className="card border-0 shadow-sm h-100 position-relative overflow-hidden">
                           {/* Default Badge Ribbon */}
                           {userAdd.isDefault && (
@@ -320,7 +321,7 @@ export default function UserProfile() {
                             <div className="row g-2">
                               <div className="col-6">
                                 <Link
-                                  to={`/address/${userAdd._id}`}
+                                  to={`/address/${userAdd.id}`}
                                   state={{ from: "/user" }}
                                   className="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center"
                                 >
@@ -338,7 +339,7 @@ export default function UserProfile() {
                               </div>
                               <div className="col-6">
                                 <button
-                                  onClick={() => removeAddress(userAdd._id)}
+                                  onClick={() => removeAddress(userAdd.id)}
                                   disabled={isLoading}
                                   className="btn btn-outline-danger w-100 d-flex align-items-center justify-content-center"
                                 >

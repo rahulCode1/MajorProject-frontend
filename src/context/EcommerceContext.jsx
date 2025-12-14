@@ -17,6 +17,7 @@ const EcommerceProvider = ({ children }) => {
   const [isLoadingWishlist, setIsLoadingWishlist] = useState(false);
   const [isLoadingOrders, setIsLoadingOrders] = useState(false);
   const [isLoadingCart, setIsLoadingCart] = useState(false);
+  const [error, setError] = useState("");
 
   const handleAddProducts = async (products) => {
     setProductList((prevStat) => [
@@ -25,71 +26,67 @@ const EcommerceProvider = ({ children }) => {
     ]);
   };
 
-  const fetchAllProducts = async (category) => {
+  const fetchAllProducts = async () => {
     let url = `${process.env.REACT_APP_BACKEND_URL}products`;
-
-    if (category) {
-      url = `${process.env.REACT_APP_BACKEND_URL}products?category=${category}`;
-    }
 
     try {
       setIsLoading(true);
 
       const res = await fetch(url);
 
+      const data = await res.json();
       if (!res.ok) {
-        throw new Error("Error occurred while fetching products.");
+        throw new Error(
+          data.message || "Error occurred while fetching products."
+        );
       }
 
-      const data = await res.json();
       const products = data.data?.products;
 
-      const transFormDat = products.map((product) => ({
-        ...product,
-      }));
-
-      setProductList(transFormDat || []);
+      setProductList(products || []);
       setIsLoading(false);
     } catch (error) {
-      console.error("Failed to fetch products:", error);
+      setIsLoading(false);
+      console.error(error || "Failed to fetch products:");
     }
   };
 
   const fetchUserAddress = async () => {
     try {
       setIsLoadingAddress(true);
-      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}address`);
+      const res = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}address/69384436ebe3d68324ec1040`
+      );
+      const data = await res.json();
 
       if (!res.ok) {
-        throw new Error("Error occurred while fetching address.");
+        throw new Error(
+          data.message || "Error occurred while fetching address."
+        );
       }
 
-      const data = await res.json();
       const address = data.data?.address;
-      const transformAddress = address.map((address) => ({
-        ...address,
-        id: address._id,
-      }));
 
-      setAddress(transformAddress || []);
-      setIsLoadingAddress(false);
+      setAddress(address || []);
     } catch (error) {
       console.error("Failed to fetch products:", error);
     }
+    setIsLoadingAddress(false);
   };
 
   const fetchAllOrders = async () => {
     try {
       setIsLoadingOrders(true);
       const res = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}order/6933ec16fa9368ef6b374eda`
+        `${process.env.REACT_APP_BACKEND_URL}order/69384436ebe3d68324ec1040`
       );
 
+      const data = await res.json();
+
       if (!res.ok) {
-        throw new Error("Error occurred while fetching order.");
+        throw new Error(data.message || "Error occurred while fetching order.");
       }
 
-      const data = await res.json();
       const orders = data.data?.orders;
       setUserOrders(orders || []);
       setIsLoadingOrders(false);
@@ -102,7 +99,7 @@ const EcommerceProvider = ({ children }) => {
     try {
       setIsLoadingCart(true);
       const res = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}cart/6933ec16fa9368ef6b374eda`
+        `${process.env.REACT_APP_BACKEND_URL}cart/69384436ebe3d68324ec1040`
       );
 
       if (!res.ok) {
@@ -110,10 +107,10 @@ const EcommerceProvider = ({ children }) => {
       }
 
       const data = await res.json();
-      const cart = data.cart.items;
+      const cart = data.cart;
+
       const transformCart = cart.map((product) => ({
         ...product.productId,
-
         quantity: product.quantity,
       }));
 
@@ -128,7 +125,7 @@ const EcommerceProvider = ({ children }) => {
     try {
       setIsLoadingWishlist(true);
       const res = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}wishlist/6933ec16fa9368ef6b374eda`
+        `${process.env.REACT_APP_BACKEND_URL}wishlist/69384436ebe3d68324ec1040`
       );
 
       if (!res.ok) {
@@ -136,8 +133,7 @@ const EcommerceProvider = ({ children }) => {
       }
 
       const data = await res.json();
-
-      const transformData = data.wishlist.items.map((product) => ({
+      const transformData = data.wishlist.map((product) => ({
         ...product.productId,
       }));
 
@@ -152,33 +148,35 @@ const EcommerceProvider = ({ children }) => {
     const tostId = toast.loading("Adding to cart...");
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}cart`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          productId: product._id,
-          quantity,
-          userId: "6933ec16fa9368ef6b374eda",
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to add product to cart.");
-      }
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}cart/69384436ebe3d68324ec1040`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            productId: product.id,
+            quantity,
+          }),
+        }
+      );
 
       const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to add product to cart.");
+      }
     } catch (error) {
       toast.error("Failed to add product to cart.", { id: tostId });
     }
 
     setProductCart((prevCart) => {
-      const exist = prevCart.find((cart) => cart._id === product._id);
+      const exist = prevCart.find((cart) => cart.id === product.id);
 
       if (exist) {
         return prevCart.map((cart) => {
-          return cart._id === product._id
+          return cart.id === product.id
             ? { ...cart, quantity: cart.quantity + 1 }
             : cart;
         });
@@ -194,7 +192,7 @@ const EcommerceProvider = ({ children }) => {
     const toastId = toast.loading("Increase quantity...");
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}cart/6933ec16fa9368ef6b374eda`,
+        `${process.env.REACT_APP_BACKEND_URL}cart/69384436ebe3d68324ec1040`,
         {
           method: "PATCH",
           headers: {
@@ -206,11 +204,14 @@ const EcommerceProvider = ({ children }) => {
         }
       );
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error("Failed to increase product quantity in  cart.");
+        throw new Error(
+          data.message || "Failed to increase product quantity in  cart."
+        );
       }
       toast.success("Quantity increased", { id: toastId });
-      const data = await response.json();
     } catch (error) {
       toast.error("Failed to increase quantity", { id: toastId });
       throw new Error("Error occurred while increase product quantity.");
@@ -218,7 +219,7 @@ const EcommerceProvider = ({ children }) => {
 
     setProductCart((prevCart) => {
       return prevCart.map((cart) => {
-        return cart._id === productId
+        return cart.id === productId
           ? { ...cart, quantity: cart.quantity + 1 }
           : cart;
       });
@@ -229,7 +230,7 @@ const EcommerceProvider = ({ children }) => {
     const toastId = toast.loading("Decrease quantity...");
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}cart/decrease/6933ec16fa9368ef6b374eda`,
+        `${process.env.REACT_APP_BACKEND_URL}cart/decrease/69384436ebe3d68324ec1040`,
         {
           method: "PATCH",
           headers: {
@@ -240,12 +241,14 @@ const EcommerceProvider = ({ children }) => {
           }),
         }
       );
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error("Failed to decrease product quantity in  cart.");
+        throw new Error(
+          data.message || "Failed to decrease product quantity in  cart."
+        );
       }
 
-      const data = await response.json();
       toast.success("Quantity decreased", { id: toastId });
     } catch (error) {
       toast.error("Failed to decrease quantity", { id: toastId });
@@ -253,15 +256,15 @@ const EcommerceProvider = ({ children }) => {
     }
 
     setProductCart((prevCart) => {
-      const exist = prevCart.find((cart) => cart._id === productId);
+      const exist = prevCart.find((cart) => cart.id === productId);
       if (exist.quantity !== 1) {
         return prevCart.map((cart) => {
-          return cart._id === productId
+          return cart.id === productId
             ? { ...cart, quantity: cart.quantity - 1 }
             : cart;
         });
       } else {
-        return [...prevCart.filter((cart) => cart._id !== productId)];
+        return [...prevCart.filter((cart) => cart.id !== productId)];
       }
     });
   };
@@ -271,7 +274,7 @@ const EcommerceProvider = ({ children }) => {
 
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}cart/remove/6933ec16fa9368ef6b374eda`,
+        `${process.env.REACT_APP_BACKEND_URL}cart/remove/69384436ebe3d68324ec1040`,
         {
           method: "PATCH",
           headers: {
@@ -282,18 +285,17 @@ const EcommerceProvider = ({ children }) => {
           }),
         }
       );
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error("Failed to remove product from cart.");
+        throw new Error(data.message || "Failed to remove product from cart.");
       }
-
-      const data = await response.json();
     } catch (error) {
       throw new Error("Error occurred while remove product form cart.");
     }
 
     setProductCart((prevCart) =>
-      prevCart.filter((cart) => cart._id !== productId)
+      prevCart.filter((cart) => cart.id !== productId)
     );
 
     toast.success("Successfully removed from cart.", { id: tostId });
@@ -303,37 +305,33 @@ const EcommerceProvider = ({ children }) => {
     const tostId = toast.loading("Adding to wishlist...");
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}wishlist`,
+        `${process.env.REACT_APP_BACKEND_URL}wishlist/69384436ebe3d68324ec1040`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            productId: product._id,
-            userId: "6933ec16fa9368ef6b374eda",
+            productId: product.id,
           }),
         }
       );
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error("Failed to add product to wishlist.");
+        throw new Error(data.message || "Failed to add product to wishlist.");
       }
-
-      const data = await response.json();
     } catch (error) {
-      throw new Error("Error occurred while add product to wishlist.");
+      throw new Error(error || "Error occurred while add product to wishlist.");
     }
 
     setWishList((prevStat) => {
       const exist = prevStat.find(
-        (wishProduct) => wishProduct._id === product._id
+        (wishProduct) => wishProduct.id === product.id
       );
       if (exist) {
         toast.success("Product removed from wishlist.", { id: tostId });
-        return prevStat.filter(
-          (wishProduct) => wishProduct._id !== product._id
-        );
+        return prevStat.filter((wishProduct) => wishProduct.id !== product.id);
       } else {
         toast.success("Successfully added to wishlist.", { id: tostId });
 
@@ -346,37 +344,35 @@ const EcommerceProvider = ({ children }) => {
     const tostId = toast.loading("Remove to wishlist...");
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}wishlist`,
+        `${process.env.REACT_APP_BACKEND_URL}wishlist/69384436ebe3d68324ec1040`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            productId: product._id,
-            userId: "6933ec16fa9368ef6b374eda",
+            productId: product.id,
           }),
         }
       );
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error("Failed to add product to wishlist.");
+        throw new Error(data.message || "Failed to add product to wishlist.");
       }
-
-      const data = await response.json();
     } catch (error) {
-      throw new Error("Error occurred while remove product to wishlist.");
+      throw new Error(
+        error || "Error occurred while remove product to wishlist."
+      );
     }
 
     setWishList((prevStat) => {
       const exist = prevStat.find(
-        (wishProduct) => wishProduct._id === product._id
+        (wishProduct) => wishProduct.id === product.id
       );
       if (exist) {
         toast.success("Product removed from wishlist.", { id: tostId });
-        return prevStat.filter(
-          (wishProduct) => wishProduct._id !== product._id
-        );
+        return prevStat.filter((wishProduct) => wishProduct.id !== product.id);
       } else {
         return [...prevStat, { ...product }];
       }
@@ -388,34 +384,32 @@ const EcommerceProvider = ({ children }) => {
 
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}wishlist/6933ec16fa9368ef6b374eda`,
+        `${process.env.REACT_APP_BACKEND_URL}wishlist/69384436ebe3d68324ec1040`,
         {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ productId: product._id }),
+          body: JSON.stringify({ productId: product.id }),
         }
       );
 
-      if (!response.ok) {
-        throw new Error("Product not move to cart.");
-      }
-
       const data = await response.json();
 
-      console.log(data);
+      if (!response.ok) {
+        throw new Error(data.message || "Product not move to cart.");
+      }
     } catch (error) {
-      throw new Error("Error occurred while move to cart.");
+      throw new Error(error || "Error occurred while move to cart.");
     }
 
     setProductCart((prevStat) => {
-      const exist = prevStat.find((cartPrd) => cartPrd._id === product._id);
+      const exist = prevStat.find((cartPrd) => cartPrd.id === product.id);
 
       if (exist) {
         toast.success("Product already exist on cart.", { id: tostId });
         return prevStat.map((cart) => {
-          return cart._id === product._id
+          return cart.id === product.id
             ? { ...cart, quantity: cart.quantity + 1 }
             : cart;
         });
@@ -426,40 +420,36 @@ const EcommerceProvider = ({ children }) => {
     });
 
     setWishList((prevStat) =>
-      prevStat.filter((wishPrd) => wishPrd._id !== product._id)
+      prevStat.filter((wishPrd) => wishPrd.id !== product.id)
     );
   };
 
   const handleCartToWishList = async (product) => {
     const tostId = toast.loading("Adding to wishlist...");
 
-    
-
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}cart/moveto_wishlist/6933ec16fa9368ef6b374eda`,
+        `${process.env.REACT_APP_BACKEND_URL}cart/moveto_wishlist/69384436ebe3d68324ec1040`,
         {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ productId: product._id }),
+          body: JSON.stringify({ productId: product.id }),
         }
       );
-
-      if (!response.ok) {
-        throw new Error("Product not move to wishlist.");
-      }
-
       const data = await response.json();
 
-      console.log(data);
+      console.log(data)
+      if (!response.ok) {
+        throw new Error(data.message || "Product not move to wishlist.");
+      }
     } catch (error) {
       throw new Error("Error occurred while move to wishlist.");
     }
 
     setWishList((prevStat) => {
-      const exist = prevStat.find((wishPrd) => wishPrd._id === product._id);
+      const exist = prevStat.find((wishPrd) => wishPrd.id === product.id);
 
       if (exist) {
         return prevStat;
@@ -469,7 +459,7 @@ const EcommerceProvider = ({ children }) => {
     });
 
     setProductCart((prevCart) =>
-      prevCart.filter((cart) => cart._id !== product._id)
+      prevCart.filter((cart) => cart.id !== product.id)
     );
     toast.success("Product moved to Wishlist.", { id: tostId });
   };
@@ -481,7 +471,7 @@ const EcommerceProvider = ({ children }) => {
 
   const handleRemoveAddress = async (addressId) => {
     setAddress((prevStat) =>
-      prevStat.filter((address) => address._id !== addressId)
+      prevStat.filter((address) => address.id !== addressId)
     );
     await fetchUserAddress();
   };
@@ -489,7 +479,7 @@ const EcommerceProvider = ({ children }) => {
   const handleUpdateAddress = async (updatedAddress) => {
     setAddress((prevStat) => {
       return prevStat.map((prevAdd) => {
-        return prevAdd._id === updatedAddress._id
+        return prevAdd.id === updatedAddress.id
           ? { ...prevAdd, ...updatedAddress }
           : prevAdd;
       });
@@ -502,32 +492,35 @@ const EcommerceProvider = ({ children }) => {
     const toastId = toast.loading("Adding default address...");
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}address/update/${address._id}/default`,
+        `${process.env.REACT_APP_BACKEND_URL}address/update/${address.id}/default`,
         {
-          method: "POST",
+          method: "PATCH",
           headers: {
             "Content-Type": "application/json",
           },
         }
       );
 
-      if (!response.ok) {
-        throw new Error("Failed to update address status.");
-      }
-
       const data = await response.json();
+
+      console.log(data);
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to update address status.");
+      }
 
       toast.success("Default address set successfully.", { id: toastId });
     } catch (error) {
       toast.error("Failed to update address isDefault status.", {
         id: toastId,
       });
+      throw new Error(error);
     }
 
     setAddress((prevStat) => {
       prevStat.map((userAdd) => ({
         ...userAdd,
-        isDefault: userAdd._id === address._id,
+        isDefault: userAdd.id === address.id,
       }));
     });
 
@@ -536,7 +529,7 @@ const EcommerceProvider = ({ children }) => {
   const handleClearCart = async () => {
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}cart/clear_cart/6933ec16fa9368ef6b374eda`,
+        `${process.env.REACT_APP_BACKEND_URL}cart/clear_cart/69384436ebe3d68324ec1040`,
         {
           method: "PATCH",
           headers: {
@@ -568,12 +561,11 @@ const EcommerceProvider = ({ children }) => {
           },
         }
       );
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error("Error occurred while cancel order.");
+        throw new Error(data.message || "Error occurred while cancel order.");
       }
-
-      const data = await response.json();
 
       toast.success("Order canceled successfully.", { id: toastId });
     } catch (error) {
@@ -581,7 +573,7 @@ const EcommerceProvider = ({ children }) => {
       throw new Error("Failed to cancel order.");
     }
 
-    setUserOrders((prevStat) => prevStat.filter((order) => order._id !== id));
+    setUserOrders((prevStat) => prevStat.filter((order) => order.id !== id));
   };
 
   const handlePlaceOrder = async (order) => {
@@ -610,6 +602,8 @@ const EcommerceProvider = ({ children }) => {
   return (
     <EcommerceContext.Provider
       value={{
+        error,
+        setError,
         isLoadingAddress,
         isLoadingOrders,
         isLoadingWishlist,

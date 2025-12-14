@@ -9,11 +9,11 @@ export default function ProductCard({ product }) {
     handleRemoveToWishList,
   } = useEcommerce();
   const checkProductIsWishlist = (id) => {
-    return wishlist.some((product) => product._id === id);
+    return wishlist.some((product) => product.id === id);
   };
 
   const checkProductIsInCart = (id) => {
-    return productCart.some((cart) => cart._id === id);
+    return productCart.some((cart) => cart.id === id);
   };
 
   return (
@@ -21,7 +21,7 @@ export default function ProductCard({ product }) {
       {/* Wishlist Button */}
       <button
         onClick={() =>
-          checkProductIsWishlist(product._id)
+          checkProductIsWishlist(product.id)
             ? handleRemoveToWishList(product)
             : handleAddToWishList(product)
         }
@@ -43,12 +43,12 @@ export default function ProductCard({ product }) {
           e.currentTarget.style.backgroundColor = "";
         }}
       >
-        {checkProductIsWishlist(product._id) ? "❤️" : "🤍"}
+        {checkProductIsWishlist(product.id) ? "❤️" : "🤍"}
       </button>
 
       {/* Image */}
       <Link
-        to={`/products/${product._id}`}
+        to={`/products/${product.id}`}
         className="text-decoration-none text-dark d-block"
         style={{ overflow: "hidden" }}
       >
@@ -71,7 +71,7 @@ export default function ProductCard({ product }) {
       <div className="card-body d-flex flex-column p-3 p-md-4">
         {/* Product Name - Fixed height with proper line clamping */}
         <Link
-          to={`/products/${product._id}`}
+          to={`/products/${product.id}`}
           className="text-decoration-none text-dark"
         >
           <h5
@@ -134,7 +134,7 @@ export default function ProductCard({ product }) {
 
         {/* Action Button */}
         <div className="mt-auto">
-          {checkProductIsInCart(product._id) ? (
+          {checkProductIsInCart(product.id) ? (
             <Link
               to="/cart"
               className="btn btn-outline-dark w-100 py-2 rounded-pill fw-medium"

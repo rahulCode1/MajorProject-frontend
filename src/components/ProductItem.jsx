@@ -18,11 +18,11 @@ const ProductItem = ({ productData }) => {
   const similarProducts = productData.data.similarProducts;
 
   const checkProductIsWishlist = (id) => {
-    return wishlist.some((product) => product._id === id);
+    return wishlist.some((product) => product.id === id);
   };
 
   const checkProductIsInCart = (id) => {
-    return productCart.some((cart) => cart._id === id);
+    return productCart.some((cart) => cart.id === id);
   };
 
   useEffect(() => {
@@ -146,7 +146,7 @@ const ProductItem = ({ productData }) => {
                       </div>
 
                       <div className="d-flex gap-2 flex-grow-1 flex-column flex-sm-row">
-                        {checkProductIsInCart(productInfo._id) ? (
+                        {checkProductIsInCart(productInfo.id) ? (
                           <Link
                             to="/cart"
                             className="btn btn-dark flex-grow-1 py-3 fw-semibold"
@@ -164,7 +164,7 @@ const ProductItem = ({ productData }) => {
                           </button>
                         )}
 
-                        {checkProductIsWishlist(productInfo._id) ? (
+                        {checkProductIsWishlist(productInfo.id) ? (
                           <Link
                             to="/wishlist"
                             className="btn btn-outline-danger py-3 fw-semibold"
@@ -295,7 +295,7 @@ const ProductItem = ({ productData }) => {
               >
                 {similarProducts && similarProducts.length !== 0 ? (
                   similarProducts.map((product) => (
-                    <div key={product._id} className="col-9 col-sm-6">
+                    <div key={product.id} className="col-9 col-sm-6">
                       <ProductCard product={product} />
                     </div>
                   ))
@@ -314,7 +314,7 @@ const ProductItem = ({ productData }) => {
             <div className="row g-4 d-none d-lg-flex">
               {similarProducts && similarProducts.length !== 0 ? (
                 similarProducts.map((product) => (
-                  <div key={product._id} className="col-md-6 col-lg-4 col-xl-3">
+                  <div key={product.id} className="col-md-6 col-lg-4 col-xl-3">
                     <ProductCard product={product} />
                   </div>
                 ))

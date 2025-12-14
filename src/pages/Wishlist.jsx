@@ -9,8 +9,6 @@ const Wishlist = () => {
     handleRemoveToWishList,
   } = useEcommerce();
 
-
-
   return (
     <main className="container py-4">
       <h1 className="mb-4">My Wishlist</h1>
@@ -21,7 +19,7 @@ const Wishlist = () => {
         <div className="row g-4">
           {wishlist && wishlist.length > 0 ? (
             wishlist.map((product) => (
-              <div className="col-md-4" key={product._id}>
+              <div className="col-md-4" key={product.id}>
                 <div className="card h-100 shadow-sm">
                   <img
                     src={product.image}

@@ -57,7 +57,7 @@ const Checkout = () => {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}order/6933ec16fa9368ef6b374eda`,
+        `${process.env.REACT_APP_BACKEND_URL}order/69384436ebe3d68324ec1040`,
         {
           method: "POST",
           headers: {
@@ -67,25 +67,21 @@ const Checkout = () => {
         }
       );
 
-      if (!response.ok) {
-        throw new Error("Failed to place order.");
-      }
-
       const data = await response.json();
 
-      console.log(data);
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to place order.");
+      }
 
       handlePlaceOrder(order);
 
-      setTimeout(() => {
-        setIsLoading(false);
-        navigate("/orders");
-      }, 1000);
+      navigate("/orders");
 
       toast.success("Order place successfully.", { id: toastId });
     } catch (error) {
       toast.error("Error occurred while place order.", { id: toastId });
     }
+    setIsLoading(false);
   };
 
   return (
@@ -105,7 +101,7 @@ const Checkout = () => {
           {address && address.length > 0 ? (
             address.map((userAdd) => (
               <div
-                key={userAdd._id}
+                key={userAdd.id}
                 className={`card mb-3 shadow-sm ${
                   userAdd.isDefault ? "border border-primary" : ""
                 }`}

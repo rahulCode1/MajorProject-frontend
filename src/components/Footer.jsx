@@ -15,18 +15,40 @@ const Footer = () => {
       <div className="container">
         <ul className="navbar-nav d-flex flex-row justify-content-evenly">
           <li className="nav-item">
-            <NavLink to="/" className="nav-link">
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                `${
+                  isActive ? "bg-dark text-light rounded shadow px-3" : ""
+                } nav-link`
+              }
+              end
+            >
               <FiHome size={22} />
             </NavLink>
           </li>
 
           <li className="nav-item">
-            <NavLink to="/products" className="nav-link">
+            <NavLink
+              to="/products"
+              className={({ isActive }) =>
+                `${
+                  isActive ? "bg-dark text-light rounded shadow px-3" : ""
+                } nav-link`
+              }
+            >
               <FiSearch size={22} />
             </NavLink>
           </li>
           <li className="nav-item">
-            <NavLink to="/cart" className="nav-link position-relative">
+            <NavLink
+              to="/cart"
+              className={({ isActive }) =>
+                `${
+                  isActive ? "bg-dark text-light rounded shadow px-3" : ""
+                } nav-link position-relative`
+              }
+            >
               <FiShoppingCart size={22} />
               {totalItemsInCart > 0 && (
                 <span
@@ -40,7 +62,14 @@ const Footer = () => {
           </li>
 
           <li className="nav-item">
-            <NavLink to="/user" className="nav-link">
+            <NavLink
+              to="/user"
+              className={({ isActive }) =>
+                `${
+                  isActive ? "bg-dark text-light rounded shadow px-3" : ""
+                } nav-link`
+              }
+            >
               <FiUser size={22} />
             </NavLink>
           </li>
