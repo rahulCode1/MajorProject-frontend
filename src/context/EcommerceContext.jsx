@@ -440,7 +440,7 @@ const EcommerceProvider = ({ children }) => {
       );
       const data = await response.json();
 
-      console.log(data)
+      
       if (!response.ok) {
         throw new Error(data.message || "Product not move to wishlist.");
       }
@@ -503,7 +503,7 @@ const EcommerceProvider = ({ children }) => {
 
       const data = await response.json();
 
-      console.log(data);
+   
 
       if (!response.ok) {
         throw new Error(data.error || "Failed to update address status.");

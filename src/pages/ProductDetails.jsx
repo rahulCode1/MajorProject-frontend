@@ -22,6 +22,7 @@ const productDetails = async (productId) => {
     `${process.env.REACT_APP_BACKEND_URL}product/${productId}`
   );
 
+  // console.log(response)
   if (!response.ok) {
     throw new Response(
       JSON.stringify(
@@ -31,6 +32,7 @@ const productDetails = async (productId) => {
     );
   } else {
     const data = await response.json();
+
     return data;
   }
 };
