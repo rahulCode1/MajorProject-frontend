@@ -37,7 +37,7 @@ const AllOrders = () => {
           {userOrders && userOrders.length > 0 ? (
             <div className="row g-4">
               {userOrders.map((order, index) => (
-                <div className="col-12" key={order.id || index}>
+                <div className="col-12" key={order._id || index}>
                   <div className="card shadow-sm border-0">
                     <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                       <div>
@@ -137,7 +137,7 @@ const AllOrders = () => {
                               {order.orderStatus !== "cancelled" &&
                                 order.orderStatus !== "delivered" && (
                                   <button
-                                    onClick={() => handleCancelOrder(order.id)}
+                                    onClick={() => handleCancelOrder(order._id)}
                                     className="btn btn-outline-danger btn-sm"
                                   >
                                     <i className="bi bi-x-circle me-2"></i>

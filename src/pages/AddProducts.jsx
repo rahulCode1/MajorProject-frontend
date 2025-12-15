@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Form, useNavigate } from "react-router-dom";
-import { useEcommerce } from "../context/EcommerceContext";
 import { toast } from "react-hot-toast";
 import Loading from "../components/Loading";
 import ErrorModal from "../components/ErrorModal";
@@ -23,7 +22,6 @@ const AddProducts = () => {
     category: "",
     tags: [],
     image: "",
-
     metaTitle: "",
     metaDescription: "",
     keywords: "",
@@ -33,7 +31,6 @@ const AddProducts = () => {
   const [tags, setTags] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const { handleAddProducts } = useEcommerce();
   const navigate = useNavigate();
 
   const handleOnChange = (e) => {
@@ -96,38 +93,36 @@ const AddProducts = () => {
       formData.rating &&
       tags.length !== 0
     ) {
-      handleAddProducts(product);
-    }
+      setIsLoading(true);
+      setError(null);
+      try {
+        const res = await fetch(
+          `${process.env.REACT_APP_BACKEND_URL}product/add`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(product),
+          }
+        );
+        const data = await res.json();
 
-    setIsLoading(true);
-    setError(null);
-    try {
-      const res = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}product/add`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(product),
+        if (!res.ok) {
+          throw new Error(data.message || "Failed to add new product.");
         }
-      );
-      const data = await res.json();
 
-      if (!res.ok) {
-        throw new Error(data.message || "Failed to add new product.");
+        toast.success("Product added successfully.", { id: tostId });
+
+        setFormData(initialFormData);
+
+        navigate("/products");
+      } catch (error) {
+        setError(error.message || "An error occurred while add new product.");
+        toast.error("An error occurred while add new product.", { id: tostId });
       }
-
-      toast.success("Product added successfully.", { id: tostId });
-
-      setFormData(initialFormData);
-
-      navigate("/products");
-    } catch (error) {
-      setError(error.message || "An error occurred while add new product.");
-      toast.error("An error occurred while add new product.", { id: tostId });
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const tagsArray = [

@@ -6,50 +6,16 @@ const EcommerceContext = createContext();
 export const useEcommerce = () => useContext(EcommerceContext);
 
 const EcommerceProvider = ({ children }) => {
-  const [productsList, setProductList] = useState([]);
   const [productCart, setProductCart] = useState([]);
   const [wishlist, setWishList] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [address, setAddress] = useState([]);
   const [userOrders, setUserOrders] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [isLoadingAddress, setIsLoadingAddress] = useState(false);
   const [isLoadingWishlist, setIsLoadingWishlist] = useState(false);
   const [isLoadingOrders, setIsLoadingOrders] = useState(false);
   const [isLoadingCart, setIsLoadingCart] = useState(false);
   const [error, setError] = useState("");
-
-  const handleAddProducts = async (products) => {
-    setProductList((prevStat) => [
-      ...prevStat,
-      { ...products, id: prevStat.length + 1 },
-    ]);
-  };
-
-  const fetchAllProducts = async () => {
-    let url = `${process.env.REACT_APP_BACKEND_URL}products`;
-
-    try {
-      setIsLoading(true);
-
-      const res = await fetch(url);
-
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(
-          data.message || "Error occurred while fetching products."
-        );
-      }
-
-      const products = data.data?.products;
-
-      setProductList(products || []);
-      setIsLoading(false);
-    } catch (error) {
-      setIsLoading(false);
-      console.error(error || "Failed to fetch products:");
-    }
-  };
 
   const fetchUserAddress = async () => {
     try {
@@ -89,10 +55,10 @@ const EcommerceProvider = ({ children }) => {
 
       const orders = data.data?.orders;
       setUserOrders(orders || []);
-      setIsLoadingOrders(false);
     } catch (error) {
-      throw new Error("Failed to fetch orders.");
+      console.error("Failed to fetch orders.", error);
     }
+    setIsLoadingOrders(false);
   };
 
   const fetchUserCarts = async () => {
@@ -440,7 +406,6 @@ const EcommerceProvider = ({ children }) => {
       );
       const data = await response.json();
 
-      
       if (!response.ok) {
         throw new Error(data.message || "Product not move to wishlist.");
       }
@@ -503,8 +468,6 @@ const EcommerceProvider = ({ children }) => {
 
       const data = await response.json();
 
-   
-
       if (!response.ok) {
         throw new Error(data.error || "Failed to update address status.");
       }
@@ -537,12 +500,12 @@ const EcommerceProvider = ({ children }) => {
           },
         }
       );
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error("Cart not clear.");
+        throw new Error(data.message || "Cart not clear.");
       }
 
-      const data = await response.json();
     } catch (error) {
       throw new Error("Error occurred while clear cart.");
     }
@@ -585,18 +548,9 @@ const EcommerceProvider = ({ children }) => {
 
   useEffect(() => {
     fetchAllOrders();
-  }, []);
-
-  useEffect(() => {
-    fetchUserAddress();
-  }, []);
-
-  useEffect(() => {
-    fetchUserCarts();
-  }, []);
-
-  useEffect(() => {
     fetchUserWishlist();
+    fetchUserAddress();
+    fetchUserCarts();
   }, []);
 
   return (
@@ -604,13 +558,11 @@ const EcommerceProvider = ({ children }) => {
       value={{
         error,
         setError,
+
         isLoadingAddress,
         isLoadingOrders,
         isLoadingWishlist,
         isLoadingCart,
-        isLoading,
-        productsList,
-        handleAddProducts,
         searchText,
         fetchUserCarts,
         setSearchText,
@@ -619,7 +571,6 @@ const EcommerceProvider = ({ children }) => {
         wishlist,
         address,
         userOrders,
-        fetchAllProducts,
         fetchUserAddress,
         handleIncreaseQuantity,
         handleDecreaseQuantity,
