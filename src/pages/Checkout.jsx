@@ -42,9 +42,19 @@ const Checkout = () => {
     }
 
     const toastId = toast.loading("Place order...");
+
+    const userProducts = [];
+
+    for (let product of productCart) {
+      userProducts.push({
+        productId: product.id,
+        quantity: product.quantity,
+      });
+    }
+
     const order = {
-      products: [...productCart],
-      address: { ...selectedAddress },
+      products: userProducts,
+      address: selectedAddress.id,
       summary: {
         totalPrice,
         totalDiscount,
@@ -52,6 +62,7 @@ const Checkout = () => {
       },
       paymentMethod: payment,
       paymentStatus: payment === "online" ? "completed" : "pending",
+      orderPlacedBy: "69384436ebe3d68324ec1040"
     };
 
     setIsLoading(true);
@@ -68,6 +79,8 @@ const Checkout = () => {
       );
 
       const data = await response.json();
+
+      console.log(data)
 
       if (!response.ok) {
         throw new Error(data.message || "Failed to place order.");

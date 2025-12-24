@@ -54,7 +54,24 @@ const EcommerceProvider = ({ children }) => {
       }
 
       const orders = data.data?.orders;
-      setUserOrders(orders || []);
+
+      const transformOrders = orders.map((order) => ({
+        id: order._id,
+        totalPrice: order.summary.totalPrice,
+        totalDiscount: order.summary.totalDiscount,
+        totalQuantity: order.summary.totalQuantity,
+        address: { ...order.address },
+        orderStatus: order.orderStatus,
+        createdAt: order.createdAt,
+        paymentMethod: order.paymentMethod,
+        paymentStatus: order.paymentStatus,
+        products: order.products.map((product) => ({
+          quantity: product.quantity,
+          ...product.productId,
+        })),
+      }));
+
+      setUserOrders(transformOrders || []);
     } catch (error) {
       console.error("Failed to fetch orders.", error);
     }
@@ -489,31 +506,9 @@ const EcommerceProvider = ({ children }) => {
 
     await fetchUserAddress();
   };
-  const handleClearCart = async () => {
-    try {
-      const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}cart/clear_cart/69384436ebe3d68324ec1040`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Types": "application/json",
-          },
-        }
-      );
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Cart not clear.");
-      }
-
-    } catch (error) {
-      throw new Error("Error occurred while clear cart.");
-    }
-  };
 
   const handleCancelOrder = async (id) => {
     const toastId = toast.loading("Order cancel...");
-
     try {
       const response = await fetch(
         `${process.env.REACT_APP_BACKEND_URL}order/${id}`,
@@ -540,7 +535,6 @@ const EcommerceProvider = ({ children }) => {
   };
 
   const handlePlaceOrder = async (order) => {
-    await handleClearCart();
     setUserOrders((prevStat) => [...prevStat, order]);
     setProductCart([]);
     fetchAllOrders();

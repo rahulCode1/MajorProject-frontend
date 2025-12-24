@@ -1,4 +1,7 @@
 import './App.css';
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import Home from './pages/Home';
 import Layout from './components/Layout';
@@ -12,6 +15,7 @@ import NotFound from "./components/NotFound"
 import ErrorPage from './pages/ErrorPage';
 import { lazy, Suspense } from 'react';
 import Loading from './components/Loading';
+import FileUpload, { loader as fileUploadLoader } from "./pages/FileUpload"
 
 const Products = lazy(() => import("./pages/Products"))
 const ProductDetails = lazy(() => import("./pages/ProductDetails"))
@@ -40,7 +44,8 @@ function App() {
         { path: "/checkout", element: <Checkout /> },
         { path: "/orders", element: <AllOrders /> },
         { path: "/user", element: <UserProfile /> },
-        { path: "*", element: <NotFound /> }
+        { path: "/fileUpload", element: <FileUpload />, loader: fileUploadLoader },
+        { path: "*", element: <NotFound /> },
       ]
     }
   ])

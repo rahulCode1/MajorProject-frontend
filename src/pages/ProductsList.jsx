@@ -1,10 +1,9 @@
-import { useEcommerce } from "../context/EcommerceContext";
+
 import { useState, useEffect } from "react";
 import CategoryFilter from "../components/CategoryFilter";
 import ProductCard from "../components/ProductCard";
 import { useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import Loading from "../components/Loading";
 
 const ProductsList = ({ productsList }) => {
   const [changePrice, setChangePrice] = useState(5000);
@@ -17,6 +16,9 @@ const ProductsList = ({ productsList }) => {
     { name: "2 Stars & Above", value: 2, id: "2star", radioName: "rating" },
     { name: "1 Stars & Above", value: 1, id: "1star", radioName: "rating" },
   ];
+
+
+  
 
   const [sortBy, setSortBy] = useState("");
 

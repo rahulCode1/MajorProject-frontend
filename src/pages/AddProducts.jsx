@@ -1,8 +1,16 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Form, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import Loading from "../components/Loading";
 import ErrorModal from "../components/ErrorModal";
+import {
+  inputFields,
+  tagsArray,
+  seoInputs,
+  categoryField,
+  ratingField,
+  materialTypeField,
+} from "../utils/arrays";
 
 const AddProducts = () => {
   const initialFormData = {
@@ -21,17 +29,41 @@ const AddProducts = () => {
     care: "",
     category: "",
     tags: [],
-    image: "",
     metaTitle: "",
     metaDescription: "",
     keywords: "",
   };
 
   const [formData, setFormData] = useState(initialFormData);
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [imgPreviewUrl, setImgPreviewUrl] = useState([]);
   const [tags, setTags] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const fileInputRef = useRef();
+
+  const onPickedFile = (event) => {
+    const files = Array.from(event.target.files);
+
+    setSelectedFiles(files);
+
+    const previewUrl = files.map((file) => ({
+      file,
+      previewUrl: URL.createObjectURL(file),
+    }));
+
+    setImgPreviewUrl(previewUrl);
+    fileInputRef.current.value = "";
+  };
+
+  useEffect(() => {
+    return () => {
+      imgPreviewUrl.forEach((img) => {
+        URL.revokeObjectURL(img.previewUrl);
+      });
+    };
+  }, [imgPreviewUrl]);
 
   const handleOnChange = (e) => {
     setFormData((prevStat) => ({ ...prevStat, [e.target.id]: e.target.value }));
@@ -50,97 +82,72 @@ const AddProducts = () => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     const tostId = toast.loading("Adding products...");
-    const product = {
-      name: formData.name,
-      shortDescription: formData.shortDescription,
-      description: formData.description,
-      price: formData.price,
-      discountPrice: formData.discountPrice,
-      costPrice: formData.costPrice,
-      length: formData.length,
-      width: formData.width,
-      height: formData.height,
-      weight: formData.weight,
-      materialType: formData.materialType,
-      care: formData.care.split(", "),
-      category: formData.category,
-      tags,
-      image: formData.image,
-      rating: formData.rating,
-      metaTitle: formData.metaTitle,
-      metaDescription: formData.metaDescription,
-      keywords: formData.keywords,
-    };
 
-    if (
-      formData.name &&
-      formData.shortDescription &&
-      formData.description &&
-      formData.care &&
-      formData.category &&
-      formData.price &&
-      formData.discountPrice &&
-      formData.costPrice &&
-      formData.length &&
-      formData.width &&
-      formData.height &&
-      formData.weight &&
-      formData.materialType &&
-      formData.image &&
-      formData.metaTitle &&
-      formData.description &&
-      formData.keywords &&
-      formData.rating &&
-      tags.length !== 0
-    ) {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const res = await fetch(
-          `${process.env.REACT_APP_BACKEND_URL}product/add`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(product),
-          }
-        );
-        const data = await res.json();
+    setIsLoading(true);
+    setError(null);
+    try {
+      const appendData = new FormData();
 
-        if (!res.ok) {
-          throw new Error(data.message || "Failed to add new product.");
+      // basic fields
+      appendData.append("name", formData.name);
+      appendData.append("shortDescription", formData.shortDescription);
+      appendData.append("description", formData.description);
+      appendData.append("price", formData.price);
+      appendData.append("discountPrice", formData.discountPrice);
+      appendData.append("costPrice", formData.costPrice);
+      appendData.append("length", formData.length);
+      appendData.append("width", formData.width);
+      appendData.append("height", formData.height);
+      appendData.append("weight", formData.weight);
+      appendData.append("materialType", formData.materialType);
+      appendData.append("category", formData.category);
+      appendData.append("rating", formData.rating);
+      appendData.append("metaTitle", formData.metaTitle);
+      appendData.append("metaDescription", formData.metaDescription);
+      appendData.append("keywords", formData.keywords);
+
+      // care (string → array)
+      formData.care
+        .split(",")
+        .map((item) => item.trim())
+        .forEach((value) => {
+          appendData.append("care[]", value);
+        });
+
+      // tags (array)
+      tags.forEach((tag) => {
+        appendData.append("tags[]", tag);
+      });
+
+      selectedFiles.forEach((img) => {
+        appendData.append("images", img);
+      });
+
+      const res = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}product/add`,
+        {
+          method: "POST",
+          body: appendData,
         }
+      );
+      const data = await res.json();
 
-        toast.success("Product added successfully.", { id: tostId });
-
-        setFormData(initialFormData);
-
-        navigate("/products");
-      } catch (error) {
-        setError(error.message || "An error occurred while add new product.");
-        toast.error("An error occurred while add new product.", { id: tostId });
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to add new product.");
       }
-      setIsLoading(false);
-    }
-  };
 
-  const tagsArray = [
-    { value: "GodStatues", label: "God/Goddess Statues" },
-    { value: "AnimalFigurines", label: "Animal Figurines" },
-    { value: "BuddhaStatues", label: "Buddha Statues" },
-    { value: "ModernSculptures", label: "Modern Sculptures" },
-    { value: "MortarPestle", label: "Mortar & Pestle" },
-    { value: "CuttingBoards", label: "Cutting Boards" },
-    { value: "FruitBowls", label: "Fruit Bowls" },
-    { value: "PenHolders", label: "Pen Holders" },
-    { value: "Paperweights", label: "Paperweights" },
-    { value: "Trophies", label: "Trophies" },
-    { value: "TempleMandir", label: "Temple/Mandir" },
-    { value: "PoojaThalis", label: "Pooja Thalis" },
-    { value: "IncenseHolders", label: "Incense Holders" },
-    { value: "PrayerItems", label: "Prayer Items" },
-  ];
+      toast.success("Product added successfully.", { id: tostId });
+
+      setFormData(initialFormData);
+      setSelectedFiles([]);
+
+      navigate("/products");
+    } catch (error) {
+      setError(error.message || "An error occurred while add new product.");
+      toast.error("An error occurred while add new product.", { id: tostId });
+    }
+    setIsLoading(false);
+  };
 
   return (
     <main className="container py-3">
@@ -158,35 +165,24 @@ const AddProducts = () => {
         onSubmit={handleFormSubmit}
         className="p-4 bg-white shadow-sm rounded"
       >
-        <div className="mb-4">
-          <label htmlFor="name" className="form-label fw-semibold">
-            Product name
-          </label>
-          <input
-            type="text"
-            id="name"
-            placeholder="Enter Product name"
-            className="form-control form-control-lg"
-            required
-            onChange={handleOnChange}
-            value={formData.name}
-          />
-        </div>
+        <div className="row g-3 mb-4">
+          {inputFields.map((field) => (
+            <div className="col-md-6" key={field.id}>
+              <label htmlFor={field.id} className="form-label fw-semibold">
+                {field.label}
+              </label>
 
-        <div className="mb-4">
-          <label htmlFor="shortDescription" className="form-label fw-semibold">
-            Short Description
-          </label>
-          <input
-            type="text"
-            id="shortDescription"
-            name="shortDescription"
-            value={formData.shortDescription}
-            placeholder="Enter short description"
-            className="form-control"
-            required
-            onChange={handleOnChange}
-          />
+              <input
+                type={field.type}
+                id={field.id}
+                name={field.name}
+                placeholder={field.placeholder}
+                className="form-control"
+                value={formData[field.name]}
+                onChange={handleOnChange}
+              />
+            </div>
+          ))}
         </div>
 
         <div className="mb-4">
@@ -199,219 +195,62 @@ const AddProducts = () => {
             value={formData.description}
             className="form-control"
             rows={8}
-            required
+            // required
             onChange={handleOnChange}
             placeholder="Enter product description"
           />
         </div>
 
-        <div className="row g-3 mb-4">
-          <div className="col-md-6">
-            <label htmlFor="price" className="form-label fw-semibold">
-              Price
-            </label>
-            <div className="input-group">
-              <span className="input-group-text">₹</span>
-              <input
-                type="number"
-                id="price"
-                name="price"
-                value={formData.price}
-                placeholder="Enter Product price"
-                className="form-control"
-                required
-                min={0}
-                onChange={handleOnChange}
-              />
-            </div>
-          </div>
-          <div className="col-md-6">
-            <label htmlFor="discountPrice" className="form-label fw-semibold">
-              Discount/Sale Price
-            </label>
-            <div className="input-group">
-              <span className="input-group-text">₹</span>
-              <input
-                type="number"
-                id="discountPrice"
-                name="discountPrice"
-                value={formData.discountPrice}
-                placeholder="Enter discount price"
-                className="form-control"
-                required
-                min={0}
-                onChange={handleOnChange}
-              />
-            </div>
-          </div>
-        </div>
+        <div className="mb-4">
+          <label htmlFor={ratingField.id} className="form-label fw-semibold">
+            {ratingField.label}
+          </label>
 
-        <div className="row g-3 mb-4">
-          <div className="col-md-6">
-            <label htmlFor="costPrice" className="form-label fw-semibold">
-              Cost Price
-            </label>
-            <div className="input-group">
-              <span className="input-group-text">₹</span>
-              <input
-                type="number"
-                id="costPrice"
-                name="costPrice"
-                value={formData.costPrice}
-                placeholder="Enter cost price"
-                className="form-control"
-                required
-                min={0}
-                onChange={handleOnChange}
-              />
-            </div>
-          </div>
-          <div className="col-md-6">
-            <label htmlFor="length" className="form-label fw-semibold">
-              Length
-            </label>
-            <div className="input-group">
-              <input
-                type="number"
-                id="length"
-                name="length"
-                value={formData.length}
-                placeholder="Enter product Length"
-                className="form-control"
-                required
-                onChange={handleOnChange}
-              />
-              <span className="input-group-text">cm</span>
-            </div>
-          </div>
-        </div>
+          <select
+            id={ratingField.id}
+            name={ratingField.name}
+            className="form-select"
+            value={formData[ratingField.name]}
+            onChange={handleOnChange}
+          >
+            <option value="" disabled>
+              {ratingField.placeholder}
+            </option>
 
-        <div className="row g-3 mb-4">
-          <div className="col-md-6">
-            <label htmlFor="width" className="form-label fw-semibold">
-              Width
-            </label>
-            <div className="input-group">
-              <input
-                type="number"
-                id="width"
-                name="width"
-                value={formData.width}
-                placeholder="Enter product width"
-                className="form-control"
-                required
-                onChange={handleOnChange}
-              />
-              <span className="input-group-text">cm</span>
-            </div>
-          </div>
-          <div className="col-md-6">
-            <label htmlFor="height" className="form-label fw-semibold">
-              Height
-            </label>
-            <div className="input-group">
-              <input
-                type="number"
-                id="height"
-                name="height"
-                value={formData.height}
-                placeholder="Enter product height"
-                required
-                className="form-control"
-                onChange={handleOnChange}
-              />
-              <span className="input-group-text">cm</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="row g-3 mb-4">
-          <div className="col-md-6">
-            <label htmlFor="weight" className="form-label fw-semibold">
-              Weight
-            </label>
-            <div className="input-group">
-              <input
-                type="number"
-                id="weight"
-                name="weight"
-                value={formData.weight}
-                required
-                onChange={handleOnChange}
-                placeholder="Enter product weight"
-                className="form-control"
-              />
-              <span className="input-group-text">kg</span>
-            </div>
-          </div>
-          <div className="col-md-6">
-            <label htmlFor="rating" className="form-label fw-semibold">
-              Rating
-            </label>
-            <select
-              id="rating"
-              name="rating"
-              required
-              onChange={handleOnChange}
-              className="form-select"
-            >
-              <option value="" disabled selected>
-                Select Product Rating
+            {ratingField.options.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
               </option>
-              <option value={5}>⭐⭐⭐⭐⭐ (5 Stars)</option>
-              <option value={4}>⭐⭐⭐⭐ (4 Stars)</option>
-              <option value={3}>⭐⭐⭐ (3 Stars)</option>
-              <option value={2}>⭐⭐ (2 Stars)</option>
-              <option value={1}>⭐ (1 Star)</option>
-            </select>
-          </div>
+            ))}
+          </select>
         </div>
 
         <div className="row g-3 mb-4">
-          <div className="col-md-6">
-            <label htmlFor="materialType" className="form-label fw-semibold">
-              Material Type
-            </label>
-            <select
-              id="materialType"
-              name="materialType"
-              required
-              onChange={handleOnChange}
-              className="form-select"
-            >
-              <option selected disabled value={formData.materialType}>
-                Select Material Type
-              </option>
-              <option value="WhiteMarble">White Marble</option>
-              <option value="BlackMarble">Black Marble</option>
-              <option value="GreenMarble">Green Marble</option>
-              <option value="PinkMarble">Pink Marble</option>
-              <option value="Granite">Granite</option>
-              <option value="Sandstone">Sandstone</option>
-            </select>
-          </div>
-          <div className="col-md-6">
-            <label htmlFor="category" className="form-label fw-semibold">
-              Select Category
-            </label>
-            <select
-              id="category"
-              name="category"
-              required
-              onChange={handleOnChange}
-              className="form-select"
-            >
-              <option selected disabled value="">
-                Select Category
-              </option>
-              <option value="StatuesIdols">Statues & Idols</option>
-              <option value="HomeDecor">Home Decor</option>
-              <option value="KitchenDining">Kitchen & Dining</option>
-              <option value="GardenOutdoor">Garden & Outdoor</option>
-              <option value="CorporateGifts">Corporate Gifts</option>
-              <option value="ReligiousItems">Religious Items</option>
-            </select>
-          </div>
+          {[materialTypeField, categoryField].map((field) => (
+            <div className="col-md-6" key={field.id}>
+              <label htmlFor={field.id} className="form-label fw-semibold">
+                {field.label}
+              </label>
+
+              <select
+                id={field.id}
+                name={field.name}
+                className="form-select"
+                value={formData[field.name]}
+                onChange={handleOnChange}
+              >
+                <option value="" disabled>
+                  {field.placeholder}
+                </option>
+
+                {field.options.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ))}
         </div>
 
         <div className="mb-4">
@@ -423,7 +262,7 @@ const AddProducts = () => {
             name="care"
             className="form-control"
             rows={8}
-            required
+            // required
             placeholder="Enter product care instructions (comma separated)"
             onChange={handleOnChange}
           />
@@ -456,46 +295,69 @@ const AddProducts = () => {
         </div>
 
         <div className="mb-4">
-          <label htmlFor="image" className="form-label fw-semibold">
+          <label htmlFor="images" className="form-label fw-semibold">
             Image
           </label>
           <input
-            type="text"
-            id="image"
-            name="image"
-            placeholder="Enter Image Link (URL)"
-            required
-            onChange={handleOnChange}
-            className="form-control"
-            value={formData.image}
+            type="file"
+            id="images"
+            name="images"
+            // required
+            multiple
+            accept=".jpg,.png,.jpeg"
+            onChange={onPickedFile}
+            ref={fileInputRef}
           />
-          <div className="form-text">
-            Paste a direct link to the product image
-          </div>
+        </div>
+        <div className=" d-none d-md-flex  flex-row gap-2 flex-wrap">
+          {imgPreviewUrl && imgPreviewUrl.length !== 0 ? (
+            imgPreviewUrl.map((img) => (
+              <img
+                src={img.previewUrl}
+                className="img-fluid rounded shadow mb-2"
+                style={{ width: "200px", objectFit: "cover" }}
+              />
+            ))
+          ) : (
+            <p>No images selected.</p>
+          )}
+        </div>
+        <div className="  d-md-none d-flex flex-row gap-1 flex-wrap">
+          {imgPreviewUrl && imgPreviewUrl.length !== 0 ? (
+            imgPreviewUrl.map((img) => (
+              <img
+                src={img.previewUrl}
+                className="img-fluid rounded shadow mb-2"
+                style={{ width: "120px", objectFit: "cover" }}
+              />
+            ))
+          ) : (
+            <p>No images selected.</p>
+          )}
         </div>
 
         <hr className="my-5" />
 
         <h5 className="mb-3 text-primary">SEO Information</h5>
 
-        <div className="mb-4">
-          <label htmlFor="metaTitle" className="form-label fw-semibold">
-            Meta Title
-          </label>
-          <input
-            type="text"
-            id="metaTitle"
-            name="metaTitle"
-            className="form-control"
-            placeholder="Enter SEO title (max 60 characters)"
-            maxLength="60"
-            required
-            onChange={handleOnChange}
-            value={formData.metaTitle}
-          />
-          <div className="form-text">
-            {formData.metaTitle?.length || 0}/60 characters
-          </div>
+        <div className="row g-3 mb-4">
+          {seoInputs.map((field) => (
+            <div className="col-md-12" key={field.id}>
+              <label htmlFor={field.id} className="form-label fw-semibold">
+                {field.label}
+              </label>
+
+              <input
+                type={field.type}
+                id={field.id}
+                name={field.name}
+                placeholder={field.placeholder}
+                className="form-control"
+                value={formData[field.name]}
+                onChange={handleOnChange}
+              />
+            </div>
+          ))}
         </div>
 
         <div className="mb-4">
@@ -509,31 +371,12 @@ const AddProducts = () => {
             rows="3"
             placeholder="Enter SEO description (max 160 characters)"
             maxLength="160"
-            required
+            // required
             onChange={handleOnChange}
             value={formData.metaDescription}
           ></textarea>
           <div className="form-text">
             {formData.metaDescription?.length || 0}/160 characters
-          </div>
-        </div>
-
-        <div className="mb-5">
-          <label htmlFor="keywords" className="form-label fw-semibold">
-            Keywords
-          </label>
-          <input
-            type="text"
-            id="keywords"
-            name="keywords"
-            className="form-control"
-            required
-            onChange={handleOnChange}
-            value={formData.keywords}
-            placeholder="Enter tags separated by commas (e.g., marble, handicraft, home decor)"
-          />
-          <div className="form-text">
-            Separate multiple keywords with commas
           </div>
         </div>
 

@@ -7,6 +7,8 @@ import Loading from "../components/Loading";
 const Products = () => {
   const { products } = useLoaderData();
 
+  
+
   return (
     <>
       <Suspense fallback={<Loading />}>

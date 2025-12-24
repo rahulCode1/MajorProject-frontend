@@ -53,7 +53,7 @@ export default function ProductCard({ product }) {
         style={{ overflow: "hidden" }}
       >
         <img
-          src={product.image}
+          src={product.images[0].url}
           alt={product.name}
           className="card-img-top"
           style={{

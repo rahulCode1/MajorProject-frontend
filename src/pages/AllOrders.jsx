@@ -19,7 +19,7 @@ const AllOrders = () => {
     return statusColors[status] || "secondary";
   };
 
-  console.log(userOrders);
+
 
   return (
     <div className="container my-5">
@@ -99,29 +99,29 @@ const AllOrders = () => {
                             </h6>
                             <div className="d-flex justify-content-between mb-2">
                               <span className="text-muted">Total Items:</span>
-                              <strong>{order.summary.totalQuantity}</strong>
+                              <strong>{order.totalQuantity}</strong>
                             </div>
                             <div className="d-flex justify-content-between mb-2">
                               <span className="text-muted">Subtotal:</span>
                               <span>
                                 ₹
                                 {(
-                                  order.summary.totalPrice +
-                                  order.summary.totalDiscount
+                                  order.totalPrice +
+                                  order.totalDiscount
                                 ).toFixed(2)}
                               </span>
                             </div>
                             <div className="d-flex justify-content-between mb-2 text-success">
                               <span>Discount:</span>
                               <span>
-                                -₹{order.summary.totalDiscount.toFixed(2)}
+                                -₹{order.totalDiscount.toFixed(2)}
                               </span>
                             </div>
                             <hr />
                             <div className="d-flex justify-content-between">
                               <strong className="text-dark">Total:</strong>
                               <strong className="text-primary fs-5">
-                                ₹{order.summary.totalPrice.toFixed(2)}
+                                ₹{order.totalPrice.toFixed(2)}
                               </strong>
                             </div>
                           </div>
@@ -137,7 +137,7 @@ const AllOrders = () => {
                               {order.orderStatus !== "cancelled" &&
                                 order.orderStatus !== "delivered" && (
                                   <button
-                                    onClick={() => handleCancelOrder(order._id)}
+                                    onClick={() => handleCancelOrder(order.id)}
                                     className="btn btn-outline-danger btn-sm"
                                   >
                                     <i className="bi bi-x-circle me-2"></i>
@@ -165,12 +165,12 @@ const AllOrders = () => {
                               </tr>
                             </thead>
                             <tbody>
-                              {order.products.map((product, pIndex) => (
+                               {order.products.map((product, pIndex) => (
                                 <tr key={pIndex}>
                                   <td>
                                     <div className="d-flex align-items-center">
-                                      <img
-                                        src={product.image}
+                                       <img
+                                        src={product.images[0].url}
                                         alt={product.name}
                                         className="rounded me-3"
                                         style={{
@@ -178,7 +178,7 @@ const AllOrders = () => {
                                           height: "80px",
                                           objectFit: "cover",
                                         }}
-                                      />
+                                      /> 
                                       <div>
                                         <h6 className="mb-0">{product.name}</h6>
                                         <small className="text-muted">
@@ -203,7 +203,7 @@ const AllOrders = () => {
                                     </strong>
                                   </td>
                                 </tr>
-                              ))}
+                              ))} 
                             </tbody>
                           </table>
                         </div>

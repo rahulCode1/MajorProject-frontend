@@ -22,7 +22,7 @@ const Wishlist = () => {
               <div className="col-md-4" key={product.id}>
                 <div className="card h-100 shadow-sm">
                   <img
-                    src={product.image}
+                    src={product.images[0].url}
                     className="card-img-top object-fit-cover"
                     style={{ height: "250px" }}
                     alt={product.name}

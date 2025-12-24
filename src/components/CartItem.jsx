@@ -27,7 +27,7 @@ const CartList = ({
               <div className="row g-0">
                 <div className="col-md-4">
                   <img
-                    src={product.image}
+                    src={product.images[0].url}
                     className="img-fluid w-100 h-100"
                     style={{
                       objectFit: "cover",
