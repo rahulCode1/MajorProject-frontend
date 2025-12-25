@@ -107,12 +107,16 @@ const AddProducts = () => {
       appendData.append("keywords", formData.keywords);
 
       // care (string → array)
-      formData.care
-        .split(",")
-        .map((item) => item.trim())
-        .forEach((value) => {
-          appendData.append("care[]", value);
+      if (formData.care) {
+        const careArray = formData.care
+          .split(",")
+          .map((item) => item.trim())
+          .filter((item) => item !== ""); // Remove empty strings
+
+        careArray.forEach((value) => {
+          appendData.append("care", value);
         });
+      }
 
       // tags (array)
       tags.forEach((tag) => {
@@ -140,6 +144,8 @@ const AddProducts = () => {
 
       setFormData(initialFormData);
       setSelectedFiles([]);
+      setTags([]);
+      setImgPreviewUrl([]);
 
       navigate("/products");
     } catch (error) {
@@ -311,8 +317,9 @@ const AddProducts = () => {
         </div>
         <div className=" d-none d-md-flex  flex-row gap-2 flex-wrap">
           {imgPreviewUrl && imgPreviewUrl.length !== 0 ? (
-            imgPreviewUrl.map((img) => (
+            imgPreviewUrl.map((img, index) => (
               <img
+                key={index}
                 src={img.previewUrl}
                 className="img-fluid rounded shadow mb-2"
                 style={{ width: "200px", objectFit: "cover" }}
